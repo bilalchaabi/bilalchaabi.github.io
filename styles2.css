@@ -1,0 +1,253 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  padding-bottom: 50px;
+}
+
+.header {
+  background-color: #fff;
+  color: #d14164;
+  padding: 125px 0;
+  text-align: center;
+  font-size: 120%;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: bold;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.banner {
+  background-color: #fff;
+  color: #000;
+  padding: 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  width: 150px !important;
+  max-width: 100%;
+  margin-right: 20px;
+}
+
+/* Gray background for the form area */
+.form-background {
+  background-color: #f6f6f6; /* Light gray background */
+  padding: 50px 0; /* Add padding above and below */
+}
+
+/* White background for the form wrapper */
+.form-wrapper {
+  background-color: #fff; /* White background for the form */
+  padding: 30px; /* Padding inside the white form area */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  max-width: 80%; /* Match the max-width with the disclaimer */
+  margin: 0px auto; /* Center the form wrapper horizontally */
+  padding-left: 30px; /* Adjust as needed for more space */
+  padding-right: 30px; /* Adjust as needed for more space */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow to the form */
+}
+
+.instructions {
+  font-size: 18px; /* Adjust font size */
+  color: #555; /* Gray color for text */
+  margin-top: 10px; /* Reduce space between title and instructions */
+  margin-bottom: -60px; /* Reduce space between instructions and the gray background */
+  max-width: 800px; /* Keep the width consistent with other content */
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center; /* Center the text */
+  line-height: 1.5; /* Improve readability */
+}
+
+.content {
+  margin-top: 0; /* Ensure there's no extra margin */
+  padding: 0; /* Reset padding if necessary */
+}
+
+/* Existing form styles */
+.content form.text-input-form,
+.content form.dropdown-form,
+.content form {
+  max-width: 500px;
+  margin: 10px 10px 10px 25px;
+}
+
+.content form.text-input-form label,
+.content form.dropdown-form label {
+  display: block;
+  margin-bottom: 15px;
+  font-size:19px;
+}
+
+.content form.text-input-form input,
+.content form.dropdown-form select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 25px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 19px;
+}
+
+/* Checkbox styling */
+.content form legend {
+  margin-top: 25px;
+  margin-bottom: 15px;
+  margin-left: 0px;
+  font-size: 19px;
+  white-space: nowrap;
+}
+
+.content form .checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  margin-top: 10px;
+  font-size: 19px;
+}
+
+.content form input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d14164;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.content form input[type="checkbox"]:checked {
+  background-color: #d14164;
+  border: 2px solid #d14164;
+}
+
+.content form label {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Styling for toggled freeform sections */
+#freeform,
+#emailFreeform,
+#websiteFreeform,
+#phoneFreeform,
+#addressFreeform {
+  margin-left: 50px;
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #d14164;
+  border-radius: 5px;
+  background-color: #fdfdfd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+#freeform label,
+#emailFreeform label,
+#websiteFreeform label,
+#phoneFreeform label,
+#addressFreeform label {
+  margin-bottom: 10px;
+  /* color: #d14164; */
+  /* font-weight: bold; */
+}
+
+#freeform input,
+#emailFreeform input,
+#websiteFreeform input,
+#phoneFreeform input,
+#addressFreeform input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Styling for the generate and copy buttons */
+.content form.generate-button button,
+#copyTextButton {
+  padding: 15px 20px;
+  margin-top: 30px;
+  background-color: #d14164;
+  font-size: 16px;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block; /* Ensures it behaves like a button */
+}
+
+.content form.generate-button button:hover,
+#copyTextButton:hover {
+  background-color: #be3e5d;
+}
+
+#copyTextButton {
+  margin-top: 0px; /* Custom margin */
+  margin-left: 60px;
+  font-size: 16px; /* Custom font size */
+}
+
+#copyTextButton:hover {
+  background-color: #be3e5d; /* Different hover color */
+}
+
+.generated-text {
+  margin: 50px auto; /* Center the text horizontally and add space above and below */
+  max-width: 90%; /* Limit the width to 90% of the container */
+  padding: 20px; /* Add padding inside the element */
+  background-color: #fdfdfd; /* Optional: Add a background color */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+  font-family: Arial, sans-serif; /* Ensure font consistency */
+  font-size: 16px; /* Set a readable font size */
+  line-height: 1.5; /* Improve readability */
+  color: #333; /* Text color */
+}
+
+/* Styling for the notification that appears at the top of the page */
+#copyNotification {
+  display: none;
+  background-color: #be3e5d;
+  color: white;
+  padding: 15px;
+  position: fixed;
+  top: 20px; /* Position the notification 20px from the top */
+  left: 50%; /* Position it halfway across the page horizontally */
+  transform: translateX(-50%); /* Center the notification */
+  border-radius: 4px;
+  z-index: 1000; /* Ensures the notification appears above other content */
+  text-align: center; /* Center the text within the notification */
+}
+
+.disclaimer {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 50px auto;
+  max-width: 90%; /* Set a max width for the disclaimer */
+  padding-left: 30px; /* Adjust as needed for more space */
+  padding-right: 30px; /* Adjust as needed for more space */
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Matches the banner's shadow */
+  color: #000; /* Ensures text is visible and consistent */
+}
+.disclaimer h2 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  color: #d14164; /* Matches the header color */
+}
