@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles2.css">
+  <title>Privacy Policy Generator</title> <!-- Title of the website, displayed in the browser tab -->
+</head>
+<body>
+
+<div class="banner">
+  <!-- Banner section with a logo image -->
+  <img src="getthru-logo_2021_full-color.png" alt="Logo" class="logo">
+</div>
+
+<div class="header">
+  <!-- Header section containing the title of the privacy policy generator -->
+  <h1>10DLC Compliant Privacy Policy Generator</h1>
+
+  <!-- Instructions paragraph -->
+  <p class="instructions">
+    Use this form to generate a privacy policy that complies with 10DLC requirements. Make sure to provide accurate information to ensure the policy is tailored to your organization.
+  </p>
+</div>
+
+<div class="content">
+  <!-- Main content section -->
+
+  <!-- Wrapper with gray background that surrounds the white form wrapper -->
+  <div class="form-background">
+    <div class="form-wrapper">
+      
+      <!-- Text input form for collecting organization details -->
+      <form id="textForm" class="text-input-form">
+        <label for="organization">Organization Name: </label>
+        <input type="text" id="organization" name="organization"> <!-- Input for organization name -->
+        
+        <label for="websiteURL">Website URL: </label>
+        <input type="text" id="websiteURL" name="websiteURL"> <!-- Input for website URL -->
+        
+        <label for="websiteName">Website Name: </label>
+        <input type="text" id="websiteName" name="websiteName"> <!-- Input for website name -->
+      </form>
+
+      <!-- State dropdown form for selecting state -->
+      <form id="stateDropdownForm" class="dropdown-form">
+        <label for="state">Select State:</label>
+        <select id="state" name="state">
+          <option value="" selected disabled>Select your state</option> <!-- Default placeholder option -->
+          <option value="Alabama">Alabama</option>
+          <option value="Alaska">Alaska</option>
+          <option value="Arizona">Arizona</option>
+          <option value="Arkansas">Arkansas</option>
+          <option value="California">California</option>
+          <option value="Colorado">Colorado</option>
+          <option value="Connecticut">Connecticut</option>
+          <option value="Delaware">Delaware</option>
+          <option value="Florida">Florida</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Hawaii">Hawaii</option>
+          <option value="Idaho">Idaho</option>
+          <option value="Illinois">Illinois</option>
+          <option value="Indiana">Indiana</option>
+          <option value="Iowa">Iowa</option>
+          <option value="Kansas">Kansas</option>
+          <option value="Kentucky">Kentucky</option>
+          <option value="Louisiana">Louisiana</option>
+          <option value="Maine">Maine</option>
+          <option value="Maryland">Maryland</option>
+          <option value="Massachusetts">Massachusetts</option>
+          <option value="Michigan">Michigan</option>
+          <option value="Minnesota">Minnesota</option>
+          <option value="Mississippi">Mississippi</option>
+          <option value="Missouri">Missouri</option>
+          <option value="Montana">Montana</option>
+          <option value="Nebraska">Nebraska</option>
+          <option value="Nevada">Nevada</option>
+          <option value="New-Hampshire">New Hampshire</option>
+          <option value="New-Jersey">New Jersey</option>
+          <option value="New-Mexico">New Mexico</option>
+          <option value="New-York">New York</option>
+          <option value="North-Carolina">North Carolina</option>
+          <option value="North-Dakota">North Dakota</option>
+          <option value="Ohio">Ohio</option>
+          <option value="Oklahoma">Oklahoma</option>
+          <option value="Oregon">Oregon</option>
+          <option value="Pennsylvania">Pennsylvania</option>
+          <option value="Rhode-Island">Rhode Island</option>
+          <option value="South-Carolina">South Carolina</option>
+          <option value="South-Dakota">South Dakota</option>
+          <option value="Tennessee">Tennessee</option>
+          <option value="Texas">Texas</option>
+          <option value="Utah">Utah</option>
+          <option value="Vermont">Vermont</option>
+          <option value="Virginia">Virginia</option>
+          <option value="Washington">Washington</option>
+          <option value="West-Virginia">West Virginia</option>
+          <option value="Wisconsin">Wisconsin</option>
+          <option value="Wyoming">Wyoming</option>
+        </select>
+      </form>
+
+      <!-- Form for selecting types of personal information collected -->
+      <form>
+        <legend>What kind of personal information do you collect?</legend>
+        <div class="checkbox-container">
+          <input type="checkbox" id="email" name="source" value="email">
+          <label for="email">Email Address</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="firstLast" name="source" value="firstLast">
+          <label for="firstLast">First and Last Name</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="phone" name="source" value="phone">
+          <label for="phone">Phone Number</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="address" name="source" value="address">
+          <label for="address">Address</label>
+        </div>
+      </form>
+
+      <!-- Form for selecting contact methods -->
+      <form>
+        <legend>How can users contact your organization for any questions regarding your privacy policy?</legend>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="email2" name="source" value="email2" data-toggle-target="emailFreeform" onclick="toggleFreeform('emailFreeform')">
+            <label for="email2">Email Address</label>
+        </div>
+        <div id="emailFreeform" style="display: none;">
+            <label for="emailInput">Enter your organization's email address:</label>
+            <input type="email" id="emailInput" name="email">
+        </div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="checkboxWebsite" name="source" value="checkboxWebsite" data-toggle-target="websiteFreeform" onclick="toggleFreeform('websiteFreeform')">
+            <label for="checkboxWebsite">Visiting a page on your website</label>
+        </div>
+        <div id="websiteFreeform" style="display: none;">
+            <label for="websiteInput">Enter the URL:</label>
+            <input type="url" id="websiteInput" name="website">
+        </div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="phone2" name="source" value="phone2" data-toggle-target="phoneFreeform" onclick="toggleFreeform('phoneFreeform')">
+            <label for="phone2">Phone Number</label>
+        </div>
+        <div id="phoneFreeform" style="display: none;">
+            <label for="phoneInput">Enter your organization's phone number:</label>
+            <input type="tel" id="phoneInput" name="phone">
+        </div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="address2" name="source" value="address2" data-toggle-target="addressFreeform" onclick="toggleFreeform('addressFreeform')">
+            <label for="address2">Address</label>
+        </div>
+        <div id="addressFreeform" style="display: none;">
+            <label for="addressInput">Enter your organization's address:</label>
+            <input type="text" id="addressInput" name="address">
+        </div>
+      </form>
+
+      <!-- Button to generate the privacy policy -->
+      <form id="additionalTextForm" class="generate-button">
+        <button type="button" id="showTextButton">Generate Privacy Policy</button>
+      </form>
+    
+    </div> <!-- End of form-wrapper -->
+  </div> <!-- End of form-background -->
+
+
+<!-- Paragraph to display the generated text -->
+<div id="displayText" class="generated-text"></div>
+
+<!-- Button to copy the generated text -->
+<button id="copyTextButton" class="generate-button" style="display: none;">Copy Privacy Policy</button>
+
+<!-- Custom notification for copy action -->
+<div id="copyNotification">Privacy policy copied to clipboard!</div>
+
+  <!-- Disclaimer section -->
+  <div class="disclaimer">
+    <h2>Disclaimer</h2>
+    <p>
+        The privacy policy generated by this tool is for informational purposes only and does not constitute legal advice. 
+        It should not be used as a substitute for professional legal advice or services. 
+        Users are responsible for reviewing the generated policy to ensure it is accurate and applicable to their organization. 
+        We recommend consulting with a legal professional for tailored advice. GetThru is not liable for any damages resulting from the use or misuse of the generated privacy policy.
+    </p>
+    <p>
+        By using this generator, you acknowledge and agree to these terms.
+    </p>
+  </div>
+
+<script src="script3.js"></script> <!-- External JavaScript file -->
+</body>
+</html>
