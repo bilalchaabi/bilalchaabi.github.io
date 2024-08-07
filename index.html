@@ -102,11 +102,7 @@
 
       <!-- Form for selecting types of personal information collected -->
       <form>
-        <legend>What kind of personal information do you collect?</legend>
-        <div class="checkbox-container">
-          <input type="checkbox" id="email" name="source" value="email">
-          <label for="email">Email Address</label>
-        </div>
+        <legend>What kind of personal information does your organization collect?</legend>
         <div class="checkbox-container">
           <input type="checkbox" id="firstLast" name="source" value="firstLast">
           <label for="firstLast">First and Last Name</label>
@@ -116,9 +112,34 @@
           <label for="phone">Phone Number</label>
         </div>
         <div class="checkbox-container">
+          <input type="checkbox" id="email" name="source" value="email">
+          <label for="email">Email Address</label>
+        </div>
+        <div class="checkbox-container">
           <input type="checkbox" id="address" name="source" value="address">
           <label for="address">Address</label>
         </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="paymentInfo" name="source" value="paymentInfo">
+          <label for="paymentInfo">Payment Information</label>
+        </div>
+      </form>
+
+
+      <!-- Question about selling or renting personal information -->
+      <form id="thirdPartyForm" class="dropdown-form">
+        <legend>Does your organization share, sell, or trade personal information to third parties for marketing purposes?</legend>
+        <div class="radio-container">
+          <input type="radio" id="sellRentYes" name="sellRent" value="yes">
+          <label for="sellRentYes">Yes</label>
+        </div>
+        <div class="radio-container">
+          <input type="radio" id="sellRentNo" name="sellRent" value="no">
+          <label for="sellRentNo">No</label>
+        </div>
+        <p id="complianceMessage" style="display: none; color: red; font-weight: bold;">
+          Warning: Your privacy policy will not be 10DLC compliant if you sell or rent personal information to third parties for marketing purposes.
+        </p>
       </form>
 
       <!-- Form for selecting contact methods -->
