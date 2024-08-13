@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles2.css">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
   <title>Privacy Policy Generator</title> <!-- Title of the website, displayed in the browser tab -->
 </head>
 <body>
@@ -21,6 +22,10 @@
   <p class="instructions">
     Use this form to generate a privacy policy that complies with 10DLC requirements. Make sure to provide accurate information to ensure the policy is tailored to your organization.
   </p>
+  <p class="asterisk-note">
+    <strong>Note:</strong> Fields marked with an asterisk (<span class="important">*</span>) affect the generated privacy policy text. 
+    Leaving these fields blank may result in an incomplete privacy policy.
+</p>
 </div>
 
 <div class="content">
@@ -32,14 +37,14 @@
       
       <!-- Text input form for collecting organization details -->
       <form id="textForm" class="text-input-form">
-        <label for="organization">Organization Name: </label>
-        <input type="text" id="organization" name="organization"> <!-- Input for organization name -->
+        <label for="organization">Organization Name: <span class="important">*</span></label>
+        <input type="text" id="organization" name="organization" required> <!-- Input for organization name -->
         
-        <label for="websiteURL">Website URL: </label>
-        <input type="text" id="websiteURL" name="websiteURL"> <!-- Input for website URL -->
+        <label for="websiteURL">Website URL: <span class="important">*</label>
+        <input type="text" id="websiteURL" name="websiteURL" required> <!-- Input for website URL -->
         
-        <label for="websiteName">Website Name: </label>
-        <input type="text" id="websiteName" name="websiteName"> <!-- Input for website name -->
+        <label for="websiteName">Website Name: <span class="important">*</label>
+        <input type="text" id="websiteName" name="websiteName" required> <!-- Input for website name -->
       </form>
 
       <!-- State dropdown form for selecting state -->
@@ -100,9 +105,28 @@
         </select>
       </form>
 
+        <!-- Question about selling or renting personal information -->
+        <form id="thirdPartyForm" class="dropdown-form">
+          <legend>Does your organization share, sell, or trade personal information to third parties for marketing purposes?</legend>
+          <div class="radio-container">
+            <input type="radio" id="sellRentYes" name="sellRent" value="yes">
+            <label for="sellRentYes">Yes</label>
+          </div>
+          <div class="radio-container">
+            <input type="radio" id="sellRentNo" name="sellRent" value="no">
+            <label for="sellRentNo">No</label>
+            </div>
+          <p id="complianceMessage" style="display: none; color: red; font-weight: bold;">
+            Warning: Your privacy policy will not be 10DLC compliant if you sell or rent personal information to third parties for marketing purposes.
+          </p>
+          <p id="positiveMessage" style="display: none; color: green; font-weight: bold;">
+            Great! Your organization is adhering to best practices for 10DLC compliance.
+          </p>
+        </form>
+
       <!-- Form for selecting types of personal information collected -->
       <form>
-        <legend>What kind of personal information does your organization collect?</legend>
+        <legend>What kind of personal information does your organization collect?<span class="important">*</legend>
         <div class="checkbox-container">
           <input type="checkbox" id="firstLast" name="source" value="firstLast">
           <label for="firstLast">First and Last Name</label>
@@ -125,26 +149,47 @@
         </div>
       </form>
 
-
-      <!-- Question about selling or renting personal information -->
-      <form id="thirdPartyForm" class="dropdown-form">
-        <legend>Does your organization share, sell, or trade personal information to third parties for marketing purposes?</legend>
-        <div class="radio-container">
-          <input type="radio" id="sellRentYes" name="sellRent" value="yes">
-          <label for="sellRentYes">Yes</label>
+      <!-- Question about the use of personal information -->
+      <form id="usage-Form" class="checkbox-container">
+        <legend>In what ways does your organization use collected personal information?<span class="important">*</legend>
+        <div class="checkbox-container">
+            <input type="checkbox" id="provideProducts" name="usage" value="provideProducts">
+            <label for="provideProducts">To Provide Products and Services</label>
         </div>
-        <div class="radio-container">
-          <input type="radio" id="sellRentNo" name="sellRent" value="no">
-          <label for="sellRentNo">No</label>
+        <div class="checkbox-container">
+            <input type="checkbox" id="manageAccounts" name="usage" value="manageAccounts">
+            <label for="manageAccounts">To Create and Manage User Profiles and Accounts</label>
         </div>
-        <p id="complianceMessage" style="display: none; color: red; font-weight: bold;">
-          Warning: Your privacy policy will not be 10DLC compliant if you sell or rent personal information to third parties for marketing purposes.
-        </p>
-      </form>
+        <div class="checkbox-container">
+            <input type="checkbox" id="personalizeExperience" name="usage" value="personalizeExperience">
+            <label for="personalizeExperience">To Personalize User Experience</label>
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="communicate" name="usage" value="communicate">
+            <label for="communicate">To Communicate with Users</label>
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="complyLegal" name="usage" value="complyLegal">
+            <label for="complyLegal">To Comply with Legal Requirements</label>
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="enhanceSecurity" name="usage" value="enhanceSecurity">
+            <label for="enhanceSecurity">To Enhance Security</label>
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="customerSupport" name="usage" value="customerSupport">
+            <label for="customerSupport">To Provide Customer Support</label>
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="analyzePerformance" name="usage" value="analyzePerformance">
+            <label for="analyzePerformance">To Analyze Performance and Usage</label>
+        </div>
+    </form>
+    
 
       <!-- Form for selecting contact methods -->
       <form>
-        <legend>How can users contact your organization for any questions regarding your privacy policy?</legend>
+        <legend>How can users contact your organization for any questions regarding your privacy policy?<span class="important">*</legend>
 
         <div class="checkbox-container">
             <input type="checkbox" id="email2" name="source" value="email2" data-toggle-target="emailFreeform" onclick="toggleFreeform('emailFreeform')">
