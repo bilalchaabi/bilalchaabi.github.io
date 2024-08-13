@@ -34,6 +34,7 @@ body {
   display: flex;
   align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 /* Logo styling - Styles the logo within the banner */
@@ -42,6 +43,8 @@ body {
   max-width: 100%;
   margin-right: 20px;
 }
+
+
 
 /* Gray background for the form area */
 .form-background {
@@ -74,6 +77,25 @@ body {
   line-height: 1.5;
 }
 
+.important {
+  color: #d14164; /* Choose a color that matches your design */
+  font-weight: bold;
+  font-size: 1.5em;
+  margin-left: 3px;
+  /* vertical-align: middle; */
+}
+
+.asterisk-note {
+  font-size: 16px;
+  color: #d14164;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  position: relative; /* Set position to relative */
+  top: 80px; /* Adjust this value to move the note down relative to the element above */
+}
+
 /* Content and form container styling */
 .content {
   margin-top: 0;
@@ -84,7 +106,7 @@ body {
 .content form.text-input-form,
 .content form.dropdown-form,
 .content form {
-  max-width: 500px;
+  max-width: 70%;
   margin: 10px 10px 10px 25px;
 }
 
@@ -161,6 +183,23 @@ body {
   margin-top: 20px;
   font-weight: bold;
   font-size: 18px;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Styling for the positive message */
+#positiveMessage {
+  display: none;
+  background-color: #d1ffd1;
+  color: #4caf50;
+  padding: 15px;
+  border-left: 5px solid #4caf50;
+  border-radius: 4px;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 18px;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Styling for radio button containers */
@@ -220,7 +259,7 @@ body {
   margin-left: 50px;
   margin-top: 10px;
   padding: 15px;
-  border: 1px solid #d14164;
+  border: 2px;
   border-radius: 5px;
   background-color: #fdfdfd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
