@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </ul></p>
         
         <h3>Information Sharing and Disclosure</h3>
-        <p>${organization} maintains strict privacy policies to protect the personal information of our users. This information is never sold, rented, released, or traded to others without prior consent or legal obligation. Any sharing of information with third parties is solely for the purpose of fulfilling the organization's obligations to the user. We guarantee that it will never be shared with third parties for marketing purposes.
+        <p>${organization} maintains strict privacy policies to protect the personal information of our users. Text messaging opt-in data and consent will not be sold or shared with third parties or affiliates for their marketing or promotional purposes.
         </p>
         <p>We may share your personal information in the following situations:</p>
         <ul>
