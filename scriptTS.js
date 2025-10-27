@@ -1,32 +1,3 @@
-/************************************* 
- * DEV MODE (auto-fill form for testing)
- *************************************/
-const DEV_MODE = true; // change to false for production
-
-if (DEV_MODE) {
-  window.addEventListener("DOMContentLoaded", () => {
-    // Pre-fill form fields for faster testing
-    document.getElementById("contactCount").value = 1000;
-    document.getElementById("taxexemptstatus").value = "501c3";
-    document.getElementById("vettingScore").value = 23;
-    document.getElementById("useCase").value = "Political";
-    document.getElementById("mmsType").checked = true;
-
-    // Trigger manual mode setup
-    applyManualMix(10000);
-
-    // Automatically generate carrier + rate limits
-    renderOverview();
-
-    // Fill schedule values
-    document.getElementById("timezone").value = "US/Eastern";
-
-    // Automatically run the simulation
-    document.getElementById("runTimeline").click();
-  });
-}
-
-
 /*************************************
  * FIXED CSV SCHEMA (set these once)
  *************************************/
@@ -921,4 +892,5 @@ document.addEventListener("DOMContentLoaded", () => {
     endInput.value = toLocalInputValue(end);
   }
 });
+
 
