@@ -1,0 +1,254 @@
+/* --- BASIC LAYOUT PLACEHOLDERS --- */
+body {
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #222;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.5;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+section {
+  background: white;
+  padding: 20px;
+  margin: 15px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-width: 800px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.row > div {
+  flex: 1;
+}
+
+button {
+  display: block;
+  margin: 30px auto;
+  background: #007bff;
+  color: white;
+  font-size: 16px;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.readonly {
+  background-color: #f1f1f1;
+  color: #666;
+}
+
+
+.note {
+  font-style: italic;
+  color: #555;
+}
+
+
+.input-with-badge {
+  position: relative;
+}
+
+.mode-badge {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff; /* placeholder */
+  color: #3730a3;      /* placeholder */
+  border: 1px solid #c7d2fe;
+}
+
+.warn {
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.error {
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-top: 6px;
+}
+
+.hidden { display: none; }
+
+/* --- Radio button alignment fix --- */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.radio-group label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  width: auto;
+  margin: 0;
+  accent-color: #007bff; /* modern browsers: blue check color */
+}
+
+.section-label {
+  display: block;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+#rateLimitOutput {
+  margin-top: 10px;
+  font-size: 14px;
+}
+#rateLimitOutput table {
+  border-collapse: collapse;
+  width: 100%;
+}
+#rateLimitOutput th, #rateLimitOutput td {
+  border-bottom: 1px solid #eee;
+  padding: 8px;
+  text-align: left;
+}
+
+#rateLimitOutput th:nth-child(3),
+#rateLimitOutput th:nth-child(4),
+#rateLimitOutput th:nth-child(5),
+#rateLimitOutput td:nth-child(3),
+#rateLimitOutput td:nth-child(4),
+#rateLimitOutput td:nth-child(5) {
+  text-align: right;
+}
+
+#rateLimitOutput table + .note + table,
+#rateLimitOutput table + table {
+  margin-top: 20px;         /* space before the line */
+  border-top: 2px solid #ddd;
+  padding-top: 10px;        /* space above table content */
+  margin-bottom: 15px;      /* space after the line */
+}
+
+/* Add a little breathing room below the note */
+#rateLimitOutput .note {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.table-separator {
+  border-top: 2px solid #ddd;
+  margin-top: 20px;
+  margin-bottom: 25px; /* creates space before the next table */
+}
+
+.row > button {
+  min-width: 220px;
+}
+
+/* Delivery Simulation simplified layout - aligned headers */
+#simulationOutput {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+#simulationOutput table {
+  border-collapse: collapse;
+  width: 100%;
+  border-spacing: 0;
+  margin-top: 10px;
+  table-layout: fixed; /* ensures columns align properly */
+}
+
+#simulationOutput th,
+#simulationOutput td {
+  border-bottom: 1px solid #eee;
+  padding: 10px 14px;
+  vertical-align: middle;
+}
+
+/* Keep both headers aligned correctly */
+#simulationOutput th:nth-child(1),
+#simulationOutput td:nth-child(1) {
+  text-align: left;
+  width: 50%;
+}
+
+#simulationOutput th:nth-child(2),
+#simulationOutput td:nth-child(2) {
+  text-align: right;
+  width: 50%;
+}
+
+/* Header styling */
+#simulationOutput th {
+  background-color: #f9fafb;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Hover state for rows */
+#simulationOutput tr:hover td {
+  background-color: #f8faff;
+}
+
+/* Footer note */
+#simulationOutput .note {
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-style: italic;
+  color: #555;
+  line-height: 1.4;
+}
