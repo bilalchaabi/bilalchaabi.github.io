@@ -1,4 +1,4 @@
-/*************************************
+/************************************* 
  * DEV MODE (auto-fill form for testing)
  *************************************/
 const DEV_MODE = true; // change to false for production
@@ -921,3 +921,4 @@ document.addEventListener("DOMContentLoaded", () => {
     endInput.value = toLocalInputValue(end);
   }
 });
+
