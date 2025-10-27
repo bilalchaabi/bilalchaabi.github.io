@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Throughput Simulator</title>
+  <link rel="stylesheet" href="styleTS.css">
+</head>
+<body>
+
+  <h1>Throughput Simulator</h1>
+  <p class="subtitle">Estimate throughput based on rate limits, carriers, and timing parameters.</p>
+
+  <!-- Section 1: Campaign Info -->
+  <section>
+    <h2>1️⃣ Campaign Info</h2>
+
+    <label for="csvUpload">Upload Group Export CSV</label>
+    <div class="input-with-badge">
+    <input type="file" id="csvUpload" accept=".csv">
+    </div>
+
+    <label for="contactCount">Contact Count <span style="color:#d00">*</span></label>
+    <div class="input-with-badge">
+    <input type="number" id="contactCount" placeholder="Enter total contacts">
+    <span id="manualModeBadge" class="mode-badge hidden">Manual mode</span>
+    <span id="csvModeBadge" class="mode-badge hidden">Locked by CSV</span>
+    </div>
+    <p id="contactWarning" class="warn hidden">Heads up: The campaign max is 150,000 contacts. You can still simulate, but this exceeds the in-app limit.</p>
+
+
+    <div class="row">
+      <div>
+        <label for="taxexemptstatus">Tax Exempt Status <span style="color:#d00">*</span></label>
+        <select id="taxexemptstatus">
+          <option value="">Select...</option>
+          <option value="501c3">501c3</option>
+          <option value="501c4">501c4</option>
+          <option value="501c5">501c5</option>
+          <option value="501c6">501c6</option>
+          <option value="cvtoken">CV token</option>
+          <option value="government">Government (rare)</option>
+          <option value="n/a">N/A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Vetting Score -->
+<label for="vettingScore">Vetting Score <span style="color:#d00">*</span></label>
+<input type="number" id="vettingScore" min="0" max="100" placeholder="0–100">
+<p id="vettingMsg" class="error hidden">Vetting score must be between 0 and 100.</p>
+
+<!-- Use Case -->
+<label for="useCase">Use Case <span style="color:#d00">*</span></label>
+<select id="useCase">
+  <option value="">Select...</option>
+  <option value="Charity">Charity</option>
+  <option value="Political">Political</option>
+  <option value="Customer Care">Customer Care</option>
+  <option value="Higher Education">Higher Education</option>
+  <option value="Polling & Voting">Polling & Voting</option>
+  <option value="Public Service Announcement">Public Service Announcement</option>
+</select>
+<p id="useCaseNote" class="note">
+  Available use cases depend on your tax exempt status.
+</p>
+
+  </section>
+
+  <div class="row" style="max-width:800px;margin:0 auto;">
+    <button id="generateOverview" style="flex:1">Generate Carriers + Rate Limits</button>
+  </div>
+
+      <section>
+    <h2>Carrier Breakdown</h2>
+    <div id="carrierOutput">No CSV uploaded yet.</div>
+    </section>
+
+    <section>
+    <h2>Rate Limit Summary</h2>
+    <div id="rateLimitOutput">Rate limits will appear here after overview generation.</div>
+    </section>
+
+  <!-- Section 2: Message Setup -->
+  <section>
+    <h2>2️⃣ Message Setup</h2>
+
+    <label>Message Type</label>
+    <div class="radio-group">
+    <label>
+        <input type="radio" name="messageType" id="smsType" value="sms"> SMS
+    </label>
+    <label>
+        <input type="radio" name="messageType" id="mmsType" value="mms"> MMS
+    </label>
+    </div>
+
+    <label for="initialMessage">Initial Message (SMS only)</label>
+    <textarea id="initialMessage" rows="4" placeholder="Type your initial message here..."></textarea>
+    <div id="segmentStats" class="note">
+    <p><strong>Total segments (approx):</strong> <span id="segmentTotal">0</span></p>
+    <p><strong>Characters remaining in current segment (approx):</strong> <span id="charsRemaining">160/160</span></p>
+    <p><strong>Character set:</strong> <span id="charSet">N/A</span></p>
+    </div>
+  </section>
+
+  <!-- Section 3: Schedule -->
+  <section>
+  <h2>3️⃣ Schedule</h2>
+
+  <div class="row">
+    <div>
+      <label for="timezone">Timezone</label>
+      <select id="timezone">
+        <option value="">Select...</option>
+        <option value="US/Alaska">US/Alaska</option>
+        <option value="US/Aleutian">US/Aleutian</option>
+        <option value="US/Arizona">US/Arizona</option>
+        <option value="US/Central">US/Central</option>
+        <option value="US/East-Indiana">US/East-Indiana</option>
+        <option value="US/Eastern">US/Eastern</option>
+        <option value="US/Hawaii">US/Hawaii</option>
+        <option value="US/Indiana-Starke">US/Indiana-Starke</option>
+        <option value="US/Michigan">US/Michigan</option>
+        <option value="US/Mountain">US/Mountain</option>
+        <option value="US/Pacific">US/Pacific</option>
+        <option value="US/Samoa">US/Samoa</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Initial Message Sending Window -->
+  <label class="section-label">Initial Message Sending Window</label>
+  <div class="row">
+    <div>
+      <label for="startDate">Start Date & Time</label>
+      <input type="datetime-local" id="startDate">
+    </div>
+    <div>
+      <label for="endDate">End Date & Time</label>
+      <input type="datetime-local" id="endDate">
+    </div>
+  </div>
+
+  
+
+  <!-- Conversation Window -->
+  <label class="section-label">Conversation Window</label>
+  <div class="row">
+    <div>
+      <label for="openTime">Daily Open Time</label>
+      <input type="time" id="openTime" value="09:00">
+    </div>
+    <div>
+      <label for="closeTime">Daily Close Time</label>
+      <input type="time" id="closeTime" value="21:00">
+    </div>
+  </div>
+</section>
+
+
+  <!-- Actions -->
+  <div class="row" style="max-width:800px;margin:0 auto;">
+    <button id="runTimeline" style="flex:1">Run Delivery Simulation</button>
+  </div>
+
+    <!-- Output Section -->
+
+    <section>
+      <h2>4️⃣ Delivery Simulation</h2>
+      <div id="simulationOutput">Run the overview first, then click “Run Delivery Simulation.”</div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+
+  <script src="scriptTS.js"></script>
+</body>
+</html>
