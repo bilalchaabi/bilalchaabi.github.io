@@ -6,31 +6,77 @@
   <title>Throughput Simulator</title>
   <link rel="stylesheet" href="stylesTS.css">
 </head>
+
 <body>
 
   <h1>Throughput Simulator</h1>
   <p class="subtitle">Estimate throughput based on rate limits, carriers, and timing parameters.</p>
 
-  <!-- Section 1: Campaign Info -->
-  <section>
-    <h2>1️⃣ Campaign Info</h2>
+  <div class="main-layout">
+    <!-- LEFT PANEL: INPUTS -->
+    <div class="input-panel">
 
-    <label for="csvUpload">Upload Group Export CSV</label>
-    <div class="input-with-badge">
-    <input type="file" id="csvUpload" accept=".csv">
-    </div>
+      <!-- 1️⃣ Data Source -->
+      <section>
+        <h2>1️⃣ Data Source</h2>
+        <p class="note">Choose one method for providing contact data (CSV or manual count).</p>
 
-    <label for="contactCount">Contact Count <span style="color:#d00">*</span></label>
-    <div class="input-with-badge">
-    <input type="number" id="contactCount" placeholder="Enter total contacts">
-    <span id="manualModeBadge" class="mode-badge hidden">Manual mode</span>
-    <span id="csvModeBadge" class="mode-badge hidden">Locked by CSV</span>
-    </div>
-    <p id="contactWarning" class="warn hidden">Heads up: The campaign max is 150,000 contacts. You can still simulate, but this exceeds the in-app limit.</p>
+        <label for="csvUpload">Upload Group Export CSV</label>
+        <div class="input-with-badge">
+          <input type="file" id="csvUpload" accept=".csv">
+        </div>
 
+        <div class="input-divider"><span>or</span></div>
 
-    <div class="row">
-      <div>
+        <label for="contactCount">Contact Count <span style="color:#d00">*</span></label>
+        <div class="input-with-badge">
+          <input type="number" id="contactCount" placeholder="Enter total contacts">
+          <span id="manualModeBadge" class="mode-badge hidden">Manual mode</span>
+          <span id="csvModeBadge" class="mode-badge hidden">Locked by CSV</span>
+        </div>
+
+        <p id="contactWarning" class="warn hidden">
+          Heads up: The campaign max is 150,000 contacts. You can still simulate, but this exceeds the in-app limit.
+        </p>
+
+        
+
+<!-- ⚙️ Advanced Carrier Mix (optional) -->
+<div class="advanced-mix">
+  <button type="button" id="toggleMix" class="link-btn">
+    Advanced Carrier Mix (optional) ▼
+  </button>
+
+  <div id="mixPanel" class="hidden mix-panel">
+    <table>
+      <thead>
+        <tr><th>Carrier</th><th>Percent (%)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>T-Mobile</td><td><input type="number" id="mixTmo" min="0" max="100" step="0.1" value="37"></td></tr>
+        <tr><td>Verizon</td><td><input type="number" id="mixVz"  min="0" max="100" step="0.1" value="33"></td></tr>
+        <tr><td>AT&amp;T</td><td><input type="number" id="mixAtt" min="0" max="100" step="0.1" value="28"></td></tr>
+        <tr><td>US Cellular</td><td><input type="number" id="mixUs"  min="0" max="100" step="0.1" value="1"></td></tr>
+        <tr><td>Unknown</td><td><input type="number" id="mixUnk" min="0" max="100" step="0.1" value="1"></td></tr>
+        <tr class="total-row">
+          <td><strong>Total</strong></td>
+          <td><strong id="mixTotal">100 %</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">Adjust as needed — percentages must total 100 % before generating the carrier breakdown.</p>
+  </div>
+</div>
+
+<button id="generateCarrierMix">Generate Carrier Breakdown</button>
+
+      </section>
+
+      <!-- 2️⃣ Campaign Details -->
+      <section>
+        <h2>2️⃣ Campaign Details</h2>
+        <p class="note">Provide registration and vetting details to estimate carrier rate limits.</p>
+
         <label for="taxexemptstatus">Tax Exempt Status <span style="color:#d00">*</span></label>
         <select id="taxexemptstatus">
           <option value="">Select...</option>
@@ -42,138 +88,129 @@
           <option value="government">Government (rare)</option>
           <option value="n/a">N/A</option>
         </select>
-      </div>
-    </div>
 
-    <!-- Vetting Score -->
-<label for="vettingScore">Vetting Score <span style="color:#d00">*</span></label>
-<input type="number" id="vettingScore" min="0" max="100" placeholder="0–100">
-<p id="vettingMsg" class="error hidden">Vetting score must be between 0 and 100.</p>
+        <label for="vettingScore">Vetting Score <span style="color:#d00">*</span></label>
+        <input type="number" id="vettingScore" min="0" max="100" placeholder="0–100">
+        <p id="vettingMsg" class="error hidden">Vetting score must be between 0 and 100.</p>
 
-<!-- Use Case -->
-<label for="useCase">Use Case <span style="color:#d00">*</span></label>
-<select id="useCase">
-  <option value="">Select...</option>
-  <option value="Charity">Charity</option>
-  <option value="Political">Political</option>
-  <option value="Customer Care">Customer Care</option>
-  <option value="Higher Education">Higher Education</option>
-  <option value="Polling & Voting">Polling & Voting</option>
-  <option value="Public Service Announcement">Public Service Announcement</option>
-</select>
-<p id="useCaseNote" class="note">
-  Available use cases depend on your tax exempt status.
-</p>
+        <label for="useCase">Use Case <span style="color:#d00">*</span></label>
+        <select id="useCase">
+          <option value="">Select...</option>
+          <option value="Charity">Charity</option>
+          <option value="Political">Political</option>
+          <option value="Customer Care">Customer Care</option>
+          <option value="Higher Education">Higher Education</option>
+          <option value="Polling & Voting">Polling & Voting</option>
+          <option value="Public Service Announcement">Public Service Announcement</option>
+        </select>
+        <p id="useCaseNote" class="note">
+          Available use cases depend on your tax exempt status.
+        </p>
 
-  </section>
+        <button id="generateRateLimits">Generate Rate Limit Summary</button>
+      </section>
 
-  <div class="row" style="max-width:800px;margin:0 auto;">
-    <button id="generateOverview" style="flex:1">Generate Carriers + Rate Limits</button>
-  </div>
+      <!-- 3️⃣ Message Setup & Schedule -->
+      <!-- 3️⃣ Message Setup & Schedule -->
+<section>
+  <h2>3️⃣ Message Setup & Schedule</h2>
+  <p class="note">
+    Define your message content and sending window to simulate delivery throughput.
+  </p>
 
-      <section>
-    <h2>Carrier Breakdown</h2>
-    <div id="carrierOutput">No CSV uploaded yet.</div>
-    </section>
-
-    <section>
-    <h2>Rate Limit Summary</h2>
-    <div id="rateLimitOutput">Rate limits will appear here after overview generation.</div>
-    </section>
-
-  <!-- Section 2: Message Setup -->
-  <section>
-    <h2>2️⃣ Message Setup</h2>
+  <!-- 📨 Message Setup subgroup -->
+  <div class="subgroup">
+    <h3>Message Setup</h3>
 
     <label>Message Type</label>
     <div class="radio-group">
-    <label>
-        <input type="radio" name="messageType" id="smsType" value="sms"> SMS
-    </label>
-    <label>
-        <input type="radio" name="messageType" id="mmsType" value="mms"> MMS
-    </label>
+      <label><input type="radio" name="messageType" id="smsType" value="sms" checked> SMS</label>
+      <label><input type="radio" name="messageType" id="mmsType" value="mms"> MMS</label>
     </div>
 
     <label for="initialMessage">Initial Message (SMS only)</label>
-    <textarea id="initialMessage" rows="4" placeholder="Type your initial message here..."></textarea>
+    <textarea id="initialMessage" rows="6" placeholder="Type your initial message here..."></textarea>
+
     <div id="segmentStats" class="note">
-    <p><strong>Total segments (approx):</strong> <span id="segmentTotal">0</span></p>
-    <p><strong>Characters remaining in current segment (approx):</strong> <span id="charsRemaining">160/160</span></p>
-    <p><strong>Character set:</strong> <span id="charSet">N/A</span></p>
-    </div>
-  </section>
-
-  <!-- Section 3: Schedule -->
-  <section>
-  <h2>3️⃣ Schedule</h2>
-
-  <div class="row">
-    <div>
-      <label for="timezone">Timezone</label>
-      <select id="timezone">
-        <option value="">Select...</option>
-        <option value="US/Alaska">US/Alaska</option>
-        <option value="US/Aleutian">US/Aleutian</option>
-        <option value="US/Arizona">US/Arizona</option>
-        <option value="US/Central">US/Central</option>
-        <option value="US/East-Indiana">US/East-Indiana</option>
-        <option value="US/Eastern">US/Eastern</option>
-        <option value="US/Hawaii">US/Hawaii</option>
-        <option value="US/Indiana-Starke">US/Indiana-Starke</option>
-        <option value="US/Michigan">US/Michigan</option>
-        <option value="US/Mountain">US/Mountain</option>
-        <option value="US/Pacific">US/Pacific</option>
-        <option value="US/Samoa">US/Samoa</option>
-      </select>
+      <p><strong>Total segments (approx):</strong> <span id="segmentTotal">0</span></p>
+      <p><strong>Characters remaining:</strong> <span id="charsRemaining">160/160</span></p>
+      <p><strong>Character set:</strong> <span id="charSet">N/A</span></p>
     </div>
   </div>
 
-  <!-- Initial Message Sending Window -->
-  <label class="section-label">Initial Message Sending Window</label>
-  <div class="row">
-    <div>
-      <label for="startDate">Start Date & Time</label>
-      <input type="datetime-local" id="startDate">
+  <hr class="subdivider">
+
+  <!-- ⏰ Schedule subgroup -->
+  <div class="subgroup">
+    <h3>Schedule</h3>
+
+    <div class="schedule-group highlight">
+      <div class="group-header">
+        <span class="group-title">Initial Message Sending Window</span>
+        <span class="group-subtext">The timeframe in which you can send initial messages.</span>
+      </div>
+      <div class="row">
+        <div>
+          <label for="startDate">Start Date & Time</label>
+          <input type="datetime-local" id="startDate">
+        </div>
+        <div>
+          <label for="endDate">End Date & Time</label>
+          <input type="datetime-local" id="endDate">
+        </div>
+      </div>
     </div>
-    <div>
-      <label for="endDate">End Date & Time</label>
-      <input type="datetime-local" id="endDate">
+
+    <div class="schedule-group">
+      <div class="group-header">
+        <span class="group-title">Conversation Window</span>
+        <span class="group-subtext">Controls the hours any messages can be sent each day.</span>
+      </div>
+      <div class="row">
+        <div>
+          <label for="openTime">Daily Open Time</label>
+          <input type="time" id="openTime" value="09:00">
+        </div>
+        <div>
+          <label for="closeTime">Daily Close Time</label>
+          <input type="time" id="closeTime" value="21:00">
+        </div>
+      </div>
+    </div>
+
+    <div class="sendstart-separator">
+      <label for="sendStartTime">Actual Send Start Time</label>
+      <input type="datetime-local" id="sendStartTime">
+      <p class="subtext">Defaults to your campaign start. Adjust if sending begins later.</p>
     </div>
   </div>
 
-  
-
-  <!-- Conversation Window -->
-  <label class="section-label">Conversation Window</label>
-  <div class="row">
-    <div>
-      <label for="openTime">Daily Open Time</label>
-      <input type="time" id="openTime" value="09:00">
-    </div>
-    <div>
-      <label for="closeTime">Daily Close Time</label>
-      <input type="time" id="closeTime" value="21:00">
-    </div>
-  </div>
+  <button id="runTimeline">Run Delivery Simulation</button>
 </section>
 
 
-  <!-- Actions -->
-  <div class="row" style="max-width:800px;margin:0 auto;">
-    <button id="runTimeline" style="flex:1">Run Delivery Simulation</button>
+    </div>
+
+    <!-- RIGHT PANEL: OUTPUTS -->
+    <div class="output-panel">
+      <section>
+        <h2>Carrier Breakdown</h2>
+        <div id="carrierOutput">Please upload a CSV or enter a contact count.</div>
+      </section>
+
+      <section>
+        <h2>Rate Limit Summary</h2>
+        <div id="rateLimitOutput">Rate limits will appear here after generation.</div>
+      </section>
+
+      <section>
+        <h2>Delivery Simulation</h2>
+        <div id="simulationOutput">Run the simulation to estimate throughput.</div>
+      </section>
+    </div>
   </div>
 
-    <!-- Output Section -->
-
-    <section>
-      <h2>4️⃣ Delivery Simulation</h2>
-      <div id="simulationOutput">Run the overview first, then click “Run Delivery Simulation.”</div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
-
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="scriptTS.js"></script>
 </body>
 </html>
