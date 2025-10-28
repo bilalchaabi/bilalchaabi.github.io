@@ -1,4 +1,44 @@
 /*************************************
+ * DEV MODE (auto-fill form for testing)
+ *************************************/
+const DEV_MODE = false; // change to true only when testing
+
+if (DEV_MODE) {
+  window.addEventListener("DOMContentLoaded", () => {
+    // Pre-fill form fields for faster testing
+    document.getElementById("contactCount").value = 1000;
+    document.getElementById("taxexemptstatus").value = "501c3";
+    document.getElementById("vettingScore").value = 23;
+    document.getElementById("useCase").value = "Political";
+    document.getElementById("mmsType").checked = true;
+
+    // Manual mix preview
+    applyManualMix(1000);
+
+    // Generate split outputs with new buttons
+    // generateCarrierBreakdown();
+    // generateRateLimitSummary();
+
+    // Set schedule defaults (these inputs exist)
+    const now = new Date();
+    const start = new Date(now); start.setHours(9, 0, 0, 0);
+    const end   = new Date(now); end.setDate(end.getDate() + 1); end.setHours(21, 0, 0, 0);
+    const toLocal = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+    document.getElementById("startDate").value = toLocal(start);
+    document.getElementById("endDate").value = toLocal(end);
+    document.getElementById("openTime").value = "09:00";
+    document.getElementById("closeTime").value = "21:00";
+    // Default actual send start to the campaign start:
+    document.getElementById("sendStartTime").value = toLocal(start);
+
+    // Run the simulation
+    document.getElementById("runTimeline").click();
+  });
+}
+
+
+/*************************************
  * FIXED CSV SCHEMA (set these once)
  *************************************/
 const PHONE_HEADER = "phone";     // exact header in your export
@@ -11,7 +51,7 @@ const MANUAL_MIX = [
   { name: "T-Mobile", pct: 0.37 },
   { name: "Verizon", pct: 0.33 },
   { name: "AT&T", pct: 0.28 },
-  { name: "United Cellular", pct: 0.01 },
+  { name: "US Cellular", pct: 0.01 },
   { name: "Unknown", pct: 0.01 }
 ];
 
@@ -40,7 +80,7 @@ function mapCarrier(nominal) {
   ) return "T-Mobile";
 
   if (c.includes("verizon")) return "Verizon";
-  if (c.includes("united states cellular") || c.includes("us cellular")) return "United Cellular";
+  if (c.includes("united states cellular") || c.includes("us cellular")) return "US Cellular";
   return "Unknown";
 }
 
@@ -63,19 +103,6 @@ const mmsRadio = document.getElementById('mmsType');
 const messageBox = document.getElementById('initialMessage');
 const segmentDisplay = document.getElementById('segmentCount');
 
-smsRadio.addEventListener('change', toggleMessageInput);
-mmsRadio.addEventListener('change', toggleMessageInput);
-
-function toggleMessageInput() {
-  if (mmsRadio.checked) {
-    messageBox.value = "";
-    messageBox.disabled = true;
-    segmentDisplay.textContent = "Segments: 1 (MMS fixed)";
-  } else {
-    messageBox.disabled = false;
-    updateSegmentCount();
-  }
-}
 const GSM_7_SINGLE = 160;
 const GSM_7_MULTI  = 153;
 const UCS_2_SINGLE = 70;
@@ -190,7 +217,7 @@ function remainingChars(count, segCount, encoding) {
  * Mode + tallies
  *************************************/
 let MODE = "NONE"; // "CSV" | "MANUAL" | "NONE"
-let carrierCounts = { "AT&T": 0, "T-Mobile": 0, "Verizon": 0, "United Cellular": 0, "Unknown": 0 };
+let carrierCounts = { "AT&T": 0, "T-Mobile": 0, "Verizon": 0, "US Cellular": 0, "Unknown": 0 };
 let totalRows = 0;
 let totalContacts = 0;     // unique 11-digit (CSV) or manual count
 let invalidPhoneRows = 0;  // CSV only
@@ -254,27 +281,65 @@ vettingInput?.addEventListener('input', () => {
  * Manual mix → compute carrierCounts
  *************************************/
 function applyManualMix(total) {
-  carrierCounts = { "AT&T": 0, "T-Mobile": 0, "Verizon": 0, "United Cellular": 0, "Unknown": 0 };
+  carrierCounts = { "AT&T": 0, "T-Mobile": 0, "Verizon": 0, "US Cellular": 0, "Unknown": 0 };
+
+  // 🟢 Try reading editable mix values, fallback to MANUAL_MIX if not found
+  const inputs = {
+    "T-Mobile": document.getElementById("mixTmo"),
+    "Verizon": document.getElementById("mixVz"),
+    "AT&T": document.getElementById("mixAtt"),
+    "US Cellular": document.getElementById("mixUs"),
+    "Unknown": document.getElementById("mixUnk")
+  };
+
+  // If inputs exist, read values
+  const hasInputs = Object.values(inputs).every(el => el !== null);
+  let mixValues = [];
+
+  if (hasInputs) {
+    const values = Object.entries(inputs).map(([name, el]) => ({
+      name,
+      value: Number(el.value) || 0
+    }));
+
+    // Calculate total entered percentage
+    const totalPct = values.reduce((sum, v) => sum + v.value, 0) || 100;
+
+    // Normalize to sum = 1.0
+    mixValues = values.map(v => ({
+      name: v.name,
+      pct: v.value / totalPct
+    }));
+  } else {
+    // fallback if mix panel isn’t loaded
+    mixValues = MANUAL_MIX;
+  }
+
+  // --- Compute carrier counts based on normalized mix
   let assigned = 0;
-  const parts = MANUAL_MIX.map(m => {
+  const parts = mixValues.map(m => {
     const exact = total * m.pct;
     const floored = Math.floor(exact);
     assigned += floored;
     return { ...m, exact, floored, frac: exact - floored };
   });
+
   let remainder = total - assigned;
   parts.sort((a, b) => b.frac - a.frac);
   for (let i = 0; i < parts.length && remainder > 0; i++, remainder--) {
     parts[i].floored += 1;
   }
+
   parts.forEach(p => {
     carrierCounts[p.name] = (carrierCounts[p.name] || 0) + p.floored;
   });
+
   totalContacts = total;
-  totalRows = total; // display parity
+  totalRows = total;
   invalidPhoneRows = 0;
   duplicateRows = 0;
 }
+
 
 /*************************************
  * CSV upload → CSV mode (locks count)
@@ -289,7 +354,12 @@ csvInput.addEventListener('change', (event) => {
 
   setModeCSV();
 
-  carrierCounts = { "AT&T": 0, "T-Mobile": 0, "Verizon": 0, "United Cellular": 0, "Unknown": 0 };
+    // Disable Advanced Carrier Mix when CSV is used
+  const mixSection = document.querySelector(".advanced-mix");
+  if (mixSection) mixSection.classList.add("mix-disabled");
+
+
+  carrierCounts = { "AT&T": 0, "T-Mobile": 0, "Verizon": 0, "US Cellular": 0, "Unknown": 0 };
   totalRows = 0; totalContacts = 0; invalidPhoneRows = 0; duplicateRows = 0;
 
   Papa.parse(file, {
@@ -309,19 +379,26 @@ csvInput.addEventListener('change', (event) => {
       const seen = new Set();
 
       for (const row of rows) {
-        const normalized = normalizePhone(row[PHONE_HEADER]);
-        if (!normalized) { invalidPhoneRows++; continue; }
+      const normalized = normalizePhone(row[PHONE_HEADER]);
+      if (!normalized) { invalidPhoneRows++; continue; }
 
-        if (seen.has(normalized)) { duplicateRows++; continue; }
-        seen.add(normalized);
+      if (seen.has(normalized)) { duplicateRows++; continue; }
+      seen.add(normalized);
 
-        const mapped = mapCarrier(row[CARRIER_HEADER]);
-        if (carrierCounts[mapped] === undefined) {
-          carrierCounts["Unknown"]++;
-        } else {
-          carrierCounts[mapped]++;
-        }
+      const mapped = mapCarrier(row[CARRIER_HEADER]);
+
+      // 🧩 Debug line — log raw values that map to "Unknown"
+      if (mapped === "Unknown") {
+        console.log("Unknown carrier raw value:", row[CARRIER_HEADER]);
       }
+
+      if (carrierCounts[mapped] === undefined) {
+        carrierCounts["Unknown"]++;
+      } else {
+        carrierCounts[mapped]++;
+      }
+    }
+
 
       totalContacts = seen.size;
 
@@ -329,9 +406,8 @@ csvInput.addEventListener('change', (event) => {
       contactInput.value = totalContacts;
       updateContactWarning(totalContacts);
 
-      // quick preview
-      outputContainer.textContent =
-        JSON.stringify({ mode: MODE, totalRows, totalContacts, invalidPhoneRows, duplicateRows, carrierCounts }, null, 2);
+      // Keep output placeholder until user generates overview
+      outputContainer.textContent = "Please upload a CSV or enter a contact count.";
     }
   });
 });
@@ -357,12 +433,15 @@ contactInput.addEventListener('input', () => {
   }
 
   setModeManual();
+
+    // Re-enable Advanced Carrier Mix when using manual mode
+  const mixSection = document.querySelector(".advanced-mix");
+  if (mixSection) mixSection.classList.remove("mix-disabled");
+
   updateContactWarning(val);
   applyManualMix(val);
 
-  // quick preview
-  outputContainer.textContent =
-    JSON.stringify({ mode: MODE, totalRows, totalContacts, invalidPhoneRows, duplicateRows, carrierCounts }, null, 2);
+  outputContainer.textContent = "Please upload a CSV or enter a contact count.";
 });
 
 /*************************************
@@ -414,7 +493,7 @@ function getRateLimit(carrier, messageType, vetting, useCase, taxStatus) {
   }
 
   /******** US Cellular ********/
-  if (carrier === "us cellular" || carrier === "united cellular") {
+  if (carrier === "us cellular" || carrier === "US Cellular") {
     return { sms: 600, mms: 600, interval: "minute", label: "Standard US Cellular" };
   }
 
@@ -425,77 +504,123 @@ function getRateLimit(carrier, messageType, vetting, useCase, taxStatus) {
 /*************************************
  * Overview Rendering (Carriers + Rate Limits)
  *************************************/
-function renderOverview() {
-  // Guard: need either CSV or manual count
-  const container = outputContainer;
+function generateCarrierBreakdown() {
+  const container = document.getElementById("carrierOutput");
+
+  // 🔄 Always refresh manual mix if in MANUAL mode
+  if (MODE === "MANUAL") {
+    const val = Number(contactInput.value);
+    if (Number.isFinite(val) && val > 0) {
+      applyManualMix(val);
+    }
+  }
+
   if (MODE === "NONE") {
     container.textContent = "Please upload a CSV or enter a contact count.";
     return;
   }
 
-  // --- Carrier Breakdown table (same as before) ---
-  const table = document.createElement('table');
-  table.style.width = "100%";
-  table.style.borderCollapse = "collapse";
+
+  const table = document.createElement("table");
   table.innerHTML = `
     <thead>
       <tr>
-        <th style="text-align:left;border-bottom:1px solid #ddd;padding:8px;">Carrier</th>
-        <th style="text-align:right;border-bottom:1px solid #ddd;padding:8px;">Count</th>
-        <th style="text-align:right;border-bottom:1px solid #ddd;padding:8px;">Percent</th>
+        <th>Carrier</th>
+        <th>Count</th>
+        <th>Percent</th>
       </tr>
     </thead>
     <tbody></tbody>
   `;
 
-  const tbody = table.querySelector('tbody');
-  ["T-Mobile", "Verizon", "AT&T", "United Cellular", "Unknown"].forEach(name => {
+  const tbody = table.querySelector("tbody");
+  ["T-Mobile", "Verizon", "AT&T", "US Cellular", "Unknown"].forEach(name => {
     const count = carrierCounts[name] || 0;
     const pct = totalContacts ? ((count / totalContacts) * 100).toFixed(1) : "0.0";
-    const tr = document.createElement('tr');
+    const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td style="padding:8px;border-bottom:1px solid #f0f0f0;">${name}</td>
-      <td style="padding:8px;border-bottom:1px solid #f0f0f0;text-align:right;">${count.toLocaleString()}</td>
-      <td style="padding:8px;border-bottom:1px solid #f0f0f0;text-align:right;">${pct}%</td>
+      <td>${name}</td>
+      <td style="text-align:right;">${count.toLocaleString()}</td>
+      <td style="text-align:right;">${pct}%</td>
     `;
     tbody.appendChild(tr);
   });
 
-  const meta = document.createElement('div');
-  meta.style.margin = "10px 0 15px 0";
+  const meta = document.createElement("div");
   meta.innerHTML = `
-    <div><strong>Mode:</strong> ${MODE}</div>
-    <div><strong>Total rows:</strong> ${totalRows.toLocaleString()}</div>
-    <div><strong>Unique contacts:</strong> ${totalContacts.toLocaleString()}</div>
-    ${MODE === "CSV" ? `
-      <div><strong>Invalid phone rows:</strong> ${invalidPhoneRows.toLocaleString()}</div>
-      <div><strong>Duplicates filtered:</strong> ${duplicateRows.toLocaleString()}</div>
-    ` : `
-      <div class="note">Assumptions in use: T-Mobile 37%, Verizon 33%, AT&T 28%, US Cellular 1%, Unknown 1%.</div>
-    `}
-  `;
+  <div><strong>Mode:</strong> ${MODE}</div>
+  <div><strong>Total Rows:</strong> ${totalRows.toLocaleString()}</div>
+  <div><strong>Unique Contacts:</strong> ${totalContacts.toLocaleString()}</div>
+  ${
+    MODE === "CSV"
+      ? `<div><strong>Invalid phone rows:</strong> ${invalidPhoneRows}</div>
+         <div><strong>Duplicates filtered:</strong> ${duplicateRows}</div>`
+      : (() => {
+          const tmo = document.getElementById("mixTmo")?.value || 37;
+          const vz  = document.getElementById("mixVz")?.value || 33;
+          const att = document.getElementById("mixAtt")?.value || 28;
+          const us  = document.getElementById("mixUs")?.value || 1;
+          const unk = document.getElementById("mixUnk")?.value || 1;
+          return `<div class="note">Mix used: T-Mobile ${tmo}%, Verizon ${vz}%, AT&T ${att}%, US Cellular ${us}%, Unknown ${unk}%</div>`;
+        })()
+  }
+`;
+
 
   container.innerHTML = "";
   container.appendChild(meta);
   container.appendChild(table);
+}
 
-  // --- Rate Limit Summary (now split: T-Mobile table + Other Carriers table) ---
-  const vetting = Number(document.getElementById("vettingScore").value) || 0;
-  const useCase = document.getElementById("useCase").value;
-  const taxStatus = document.getElementById("taxexemptstatus").value || "n/a";
-  const messageType = document.querySelector('input[name="messageType"]:checked')?.value || "sms";
+function generateRateLimitSummary() {
+  const vettingInput = document.getElementById("vettingScore");
+  const useCaseInput = document.getElementById("useCase");
+  const taxStatusInput = document.getElementById("taxexemptstatus");
 
+  const vetting = Number(vettingInput.value);
+  const useCase = useCaseInput.value;
+  const taxStatus = taxStatusInput.value;
+
+  // --- Validation checks ---
+  if (!taxStatus || taxStatus === "") {
+    alert("Please select a Tax Exempt Status before generating rate limits.");
+    return;
+  }
+
+  if (vettingInput.value.trim() === "") {
+  alert("Please enter a Vetting Score before generating rate limits.");
+  vettingInput.focus();
+  return;
+}
+
+if (isNaN(vetting) || vetting < 0 || vetting > 100) {
+  alert("Vetting Score must be a number between 0 and 100.");
+  vettingInput.focus();
+  return;
+}
+
+
+  if (!useCase || useCase === "") {
+    alert("Please select a Use Case before generating rate limits.");
+    useCaseInput.focus();
+    return;
+  }
+
+  // Continue as before
+  const messageType =
+    document.querySelector('input[name="messageType"]:checked')?.value || "sms";
   const rateContainer = document.getElementById("rateLimitOutput");
   rateContainer.innerHTML = "";
 
-  // Table 1: T-Mobile
+
+  // T-Mobile rate table
   const tmobileTable = document.createElement("table");
   tmobileTable.innerHTML = `
     <thead>
       <tr>
         <th>Carrier</th>
         <th>Interval</th>
-        <th>Total Limit (segments)</th>
+        <th>Total Limit</th>
         <th>Initial (95%)</th>
         <th>Replies (5%)</th>
         <th>Label</th>
@@ -507,57 +632,52 @@ function renderOverview() {
 
   const tRate = getRateLimit("T-Mobile", messageType, vetting, useCase, taxStatus);
   if (tRate) {
-    // Handle "Uncapped" display for CV token or government
-let totalDisplay, initialDisplay, repliesDisplay;
+    let totalDisplay, initialDisplay, repliesDisplay;
+    if (tRate.label.toLowerCase().includes("uncapped")) {
+      totalDisplay = "Uncapped";
+      initialDisplay = "—";
+      repliesDisplay = "—";
+    } else {
+      const total = tRate.all ?? 0;
+      totalDisplay = total.toLocaleString();
+      initialDisplay = Math.floor(total * 0.95).toLocaleString();
+      repliesDisplay = Math.ceil(total * 0.05).toLocaleString();
+    }
 
-if (tRate.label.toLowerCase().includes("uncapped")) {
-  totalDisplay = "Uncapped";
-  initialDisplay = "—";
-  repliesDisplay = "—";
-} else {
-  const total = tRate.all ?? 0;
-  const initial = Math.floor(total * 0.95);
-  const replies = Math.ceil(total * 0.05);
-  totalDisplay = total.toLocaleString();
-  initialDisplay = initial.toLocaleString();
-  repliesDisplay = replies.toLocaleString();
-}
-
-const tr = document.createElement("tr");
-tr.innerHTML = `
-  <td>T-Mobile</td>
-  <td>segments/day</td>
-  <td>${totalDisplay}</td>
-  <td>${initialDisplay}</td>
-  <td>${repliesDisplay}</td>
-  <td>${tRate.label}</td>
-`;
-
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>T-Mobile</td>
+      <td>segments/day</td>
+      <td>${totalDisplay}</td>
+      <td>${initialDisplay}</td>
+      <td>${repliesDisplay}</td>
+      <td>${tRate.label}</td>
+    `;
     tBody.appendChild(tr);
   }
+
   rateContainer.appendChild(tmobileTable);
 
+  // Note under T-Mobile table
   const note = document.createElement("p");
-note.className = "note";
-note.innerHTML =
-  '5% of your T-Mobile limit is reserved for replies to ensure you can respond to users promptly. 95% of the limit is allocated to Initial Messages';
-rateContainer.appendChild(note);
+  note.className = "note";
+  note.textContent = "5% reserved for replies, 95% for initial messages.";
+  rateContainer.appendChild(note);
 
-const separator = document.createElement("div");
-separator.className = "table-separator";
-rateContainer.appendChild(separator);
+  // Separator line
+  const separator = document.createElement("div");
+  separator.className = "table-separator";
+  rateContainer.appendChild(separator);
 
-
-  // Table 2: Other carriers
+  // Other Carriers table
   const otherTable = document.createElement("table");
-  otherTable.style.marginTop = "20px";
   otherTable.innerHTML = `
     <thead>
       <tr>
         <th>Carrier</th>
         <th>Interval</th>
-        <th>SMS Limit (segments)</th>
-        <th>MMS Limit (segments)</th>
+        <th>SMS Limit</th>
+        <th>MMS Limit</th>
         <th>Label</th>
       </tr>
     </thead>
@@ -565,7 +685,7 @@ rateContainer.appendChild(separator);
   `;
   const oBody = otherTable.querySelector("tbody");
 
-  ["Verizon", "AT&T", "United Cellular"].forEach(c => {
+  ["Verizon", "AT&T", "US Cellular"].forEach(c => {
     const rate = getRateLimit(c, messageType, vetting, useCase, taxStatus);
     if (!rate) return;
     const tr = document.createElement("tr");
@@ -578,11 +698,15 @@ rateContainer.appendChild(separator);
     `;
     oBody.appendChild(tr);
   });
+
   rateContainer.appendChild(otherTable);
 
-  // For simulation to use later
+  // Store state for simulation
   window.__lastOverview = { vetting, useCase, taxStatus, messageType };
 }
+
+
+
 
 /*************************************
  * Simulation (Schedule + Rate Limits)
@@ -593,279 +717,389 @@ function simulateDelivery() {
   const simOut = document.getElementById("simulationOutput");
   simOut.innerHTML = "";
 
-  // Must have carrierCounts & rate limits ready (from overview)
   if (MODE === "NONE" || !window.__lastOverview) {
-    simOut.textContent = "Please click “Generate Overview (Carriers + Rate Limits)” first.";
+    simOut.textContent = "Please generate carrier breakdown and rate limits first.";
     return;
   }
 
-  const { vetting, useCase, taxStatus, messageType } = window.__lastOverview;
+  const { vetting, useCase, taxStatus } = window.__lastOverview;
+  const messageType = document.querySelector('input[name="messageType"]:checked')?.value || "sms";
+  window.__lastOverview.messageType = messageType;
 
-  // Read schedule inputs
-  const start = document.getElementById("startDate").value;
-  const end = document.getElementById("endDate").value;
+  // --- Schedule Inputs ---
+  const start = new Date(document.getElementById("startDate").value);
+  const end = new Date(document.getElementById("endDate").value);
+  const sendStart = new Date(document.getElementById("sendStartTime").value);
   const open = document.getElementById("openTime").value;
   const close = document.getElementById("closeTime").value;
-  const tz = document.getElementById("timezone").value;
 
-  if (!start || !end || !open || !close || !tz) {
-    simOut.textContent = "Please complete Timezone, Start/End, and Open/Close times.";
+  if (!start || !end || !sendStart || !open || !close || isNaN(start) || isNaN(end) || isNaN(sendStart)) {
+    simOut.textContent = "Please complete all schedule fields, including Actual Send Start Time.";
     return;
   }
 
-  // Compute daily open minutes
   const [oh, om] = open.split(":").map(Number);
   const [ch, cm] = close.split(":").map(Number);
-  let openMinutes = (ch * 60 + cm) - (oh * 60 + om);
+  const openMinutes = ch * 60 + cm - (oh * 60 + om);
   if (openMinutes <= 0) {
     simOut.textContent = "Daily Close Time must be after Daily Open Time.";
     return;
   }
 
-  // Build a simple capacity table (per day) by carrier
+  // --- Determine message segment count ---
+  updateSegmentStats();
+  const text = document.getElementById("initialMessage").value || "";
+  let segmentsPerMessage = messageType === "mms" ? 1 : getSegmentStats(text).segmentCount || 1;
+
+  // --- Calculate messages needed per carrier ---
+  const needs = {};
+  Object.keys(carrierCounts).forEach(c => {
+    needs[c] = (carrierCounts[c] || 0) * segmentsPerMessage;
+  });
+
+  // --- Per-day capacity per carrier ---
   function perDayCapacity(carrier) {
     const rate = getRateLimit(carrier, messageType, vetting, useCase, taxStatus);
     if (!rate) return 0;
 
-    // T-Mobile: day-based (allocation already shown in overview, but total is what caps sending per day)
     if (carrier === "T-Mobile") {
-      return rate.all ?? 0;
+      if (rate.label.toLowerCase().includes("uncapped")) return rate.all ?? 0;
+      return Math.floor((rate.all ?? 0) * 0.95);
     }
 
-    // Minute-based carriers: scale by open window
-    const minutesPerDay = openMinutes;
-    // SMS/MMS differ for these carriers
-    const perMinute = (messageType === "mms") ? (rate.mms ?? 0) : (rate.sms ?? 0);
-    return perMinute * minutesPerDay;
+    const perMinute = messageType === "mms" ? (rate.mms ?? 0) : (rate.sms ?? 0);
+    return perMinute * openMinutes;
   }
 
   const caps = {
     "T-Mobile": perDayCapacity("T-Mobile"),
     "Verizon": perDayCapacity("Verizon"),
     "AT&T": perDayCapacity("AT&T"),
-    "United Cellular": perDayCapacity("United Cellular")
+    "US Cellular": perDayCapacity("US Cellular")
   };
 
- // Determine how many segments per contact (based on message type)
-const segCount = (messageType === "mms")
-  ? 1
-  : Number(document.getElementById("segmentTotal").textContent) || 1;
+  // --- Simulation Loop ---
+  const results = [];
+  const current = new Date(sendStart);
+  const lastDate = new Date(end);
 
-// Calculate total segments that need to be delivered per carrier
-const needs = {
-  "T-Mobile": (carrierCounts["T-Mobile"] || 0) * segCount,
-  "Verizon": (carrierCounts["Verizon"] || 0) * segCount,
-  "AT&T": (carrierCounts["AT&T"] || 0) * segCount,
-  "United Cellular": (carrierCounts["United Cellular"] || 0) * segCount,
-  "Unknown": (carrierCounts["Unknown"] || 0) * segCount
-};
+  // Helper to compute minutes remaining in first day
+  function minutesRemainingFirstDay() {
+    const openStart = new Date(current);
+    openStart.setHours(oh, om, 0, 0);
+    const closeEnd = new Date(current);
+    closeEnd.setHours(ch, cm, 0, 0);
+    if (current < openStart) return openMinutes; // started before open
+    if (current > closeEnd) return 0; // after close
+    return Math.max(0, (closeEnd - current) / 60000);
+  }
 
-  // Simple 1-day projection: how many can we send today, and days needed if only using per-day caps
-  const rows = [];
-  ["T-Mobile", "Verizon", "AT&T", "United Cellular"].forEach(c => {
-    const daily = caps[c];
-    const backlog = needs[c];
-    const daysNeeded = daily > 0 ? Math.ceil(backlog / daily) : (backlog > 0 ? "∞" : 0);
-    rows.push({ carrier: c, backlog, daily, daysNeeded });
-  });
+  const remaining = { ...needs };
+  let dayIndex = 0;
 
-// ----- Render Simplified Duration Summary -----
-const summaryTable = document.createElement("table");
-summaryTable.innerHTML = `
+  while (current <= lastDate && Object.values(remaining).some(v => v > 0)) {
+  const dayLabel = current.toLocaleDateString();
+
+  const sent = {};
+  const queued = {};
+  const failed = {};
+
+  for (const carrier of Object.keys(remaining)) {
+    // 🟢 Only T-Mobile ignores actual send start time
+    const effectiveAvailableMinutes =
+      carrier === "T-Mobile"
+        ? openMinutes
+        : dayIndex === 0
+          ? minutesRemainingFirstDay()
+          : openMinutes;
+
+    const dailyCap = caps[carrier];
+    const canSend = Math.min(dailyCap * (effectiveAvailableMinutes / openMinutes), remaining[carrier]);
+    sent[carrier] = Math.floor(canSend);
+    remaining[carrier] -= sent[carrier];
+
+    queued[carrier] = remaining[carrier] > 0 ? remaining[carrier] : 0;
+    failed[carrier] = 0;
+  }
+
+  results.push({ dayLabel, sent, queued, failed });
+  current.setDate(current.getDate() + 1);
+  current.setHours(oh, om, 0, 0);
+  dayIndex++;
+  }
+
+  // After loop, mark anything unsent as failed
+  for (const carrier of Object.keys(remaining)) {
+    if (remaining[carrier] > 0) {
+      const last = results[results.length - 1];
+      last.failed[carrier] = remaining[carrier];
+    }
+  }
+
+  // --- Add overall duration summary ---
+const summary = document.createElement("div");
+summary.innerHTML = "<h3>Estimated Total Duration by Carrier</h3>";
+
+const durationTable = document.createElement("table");
+durationTable.innerHTML = `
   <thead>
     <tr>
       <th>Carrier</th>
       <th>Estimated Delivery Time</th>
+      <th>Details</th>
     </tr>
   </thead>
   <tbody></tbody>
 `;
 
-const tbody = summaryTable.querySelector("tbody");
+const sBody = durationTable.querySelector("tbody");
 
-rows.forEach(r => {
+// Build quick per-carrier duration estimate
+["T-Mobile", "Verizon", "AT&T", "US Cellular"].forEach(c => {
+  const backlog = needs[c];
+  const daily = caps[c];
   let durationText = "";
+  let debugText = "";
 
-  if (r.carrier === "T-Mobile") {
+  if (c === "T-Mobile") {
     const rate = getRateLimit("T-Mobile", messageType, vetting, useCase, taxStatus);
     const isUncapped = rate?.label?.toLowerCase().includes("uncapped");
-
     if (isUncapped) {
       durationText = "Uncapped";
+      debugText = "N/A";
     } else {
-      const days = r.backlog > 0 ? Math.ceil(r.backlog / Math.max(1, r.daily)) : 0;
+      const days = backlog > 0 ? Math.ceil(Number(backlog) / Math.max(1, Number(daily))) : 0;
       durationText = `${days} day${days === 1 ? "" : "s"}`;
+      debugText = `${backlog.toLocaleString()} ÷ ${daily.toLocaleString()} = ${(backlog / daily).toFixed(2)}`;
     }
   } else {
-    const rate = getRateLimit(r.carrier, messageType, vetting, useCase, taxStatus);
-    const perMinute = (messageType === "mms") ? (rate?.mms ?? 0) : (rate?.sms ?? 0);
-
+    const rate = getRateLimit(c, messageType, vetting, useCase, taxStatus);
+    const perMinute = messageType === "mms" ? (rate?.mms ?? 0) : (rate?.sms ?? 0);
     if (perMinute <= 0) {
       durationText = "∞";
+      debugText = "No capacity rate found";
     } else {
-      const totalMinutes = Math.ceil(r.backlog / perMinute);
+      const totalMinutes = Math.ceil(backlog / perMinute);
       if (totalMinutes >= 60) {
         const hours = (totalMinutes / 60).toFixed(1);
         durationText = `${hours} hour${hours === "1.0" ? "" : "s"}`;
       } else {
         durationText = `${totalMinutes} minute${totalMinutes === 1 ? "" : "s"}`;
       }
+      debugText = `${backlog.toLocaleString()} ÷ ${perMinute.toLocaleString()} = ${(backlog / perMinute).toFixed(2)}`;
     }
   }
 
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td>${r.carrier}</td>
+    <td>${c}</td>
     <td>${durationText}</td>
+    <td style="text-align:right;">${debugText}</td>
   `;
-  tbody.appendChild(tr);
+  sBody.appendChild(tr);
 });
 
-simOut.innerHTML = "";
-simOut.appendChild(summaryTable);
-
-const note = document.createElement("p");
-note.className = "note";
-note.innerHTML =
-  "T-Mobile throughput is measured in segments per day. Other carriers are per minute during your open window.";
-simOut.appendChild(note);
+// --- Render Results ---
 
 
+
+// Wrap duration table in scrollable container
+const durationWrapper = document.createElement("div");
+durationWrapper.className = "table-wrapper";
+durationWrapper.appendChild(durationTable);
+summary.appendChild(durationWrapper);
+simOut.appendChild(summary);
+
+
+// Add space and a subheading before day-by-day simulation
+const spacer = document.createElement("div");
+spacer.style.margin = "20px 0";
+simOut.appendChild(spacer);
+
+const dayHeader = document.createElement("h3");
+dayHeader.textContent = "Daily Delivery Simulation";
+simOut.appendChild(dayHeader);
+
+// Now build the day-by-day table
+const summaryTable = document.createElement("table");
+summaryTable.innerHTML = `
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Carrier</th>
+      <th>Sent</th>
+      <th>Queued</th>
+      <th>Failed</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+`;
+
+const tbody = summaryTable.querySelector("tbody");
+const carrierOrder = ["T-Mobile", "Verizon", "AT&T", "US Cellular", "Unknown"];
+
+for (const r of results) {
+  for (const carrier of carrierOrder) {
+    if (!(carrier in r.sent)) continue; // skip carriers not present
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.dayLabel}</td>
+      <td>${carrier}</td>
+      <td>${r.sent[carrier].toLocaleString()}</td>
+      <td>${r.queued[carrier].toLocaleString()}</td>
+      <td>${r.failed[carrier].toLocaleString()}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+
+const dailyWrapper = document.createElement("div");
+dailyWrapper.className = "table-wrapper";
+dailyWrapper.appendChild(summaryTable);
+simOut.appendChild(dailyWrapper);
+
+
+
+  const note = document.createElement("p");
+  note.className = "note";
+  note.innerHTML = `
+    <strong>Actual Send Start:</strong> ${new Date(sendStart).toLocaleString()}<br>
+    Messages unsent after ${new Date(end).toLocaleString()} are marked as <strong>failed</strong>.
+  `;
+  simOut.appendChild(note);
 }
 
 /*************************************
- * Wire up buttons
+ * Dynamic Use Case & Vetting Logic
  *************************************/
-/*************************************
- * Dynamic Use Case Filtering + Validation
- *************************************/
-const taxStatusSelect = document.getElementById("taxexemptstatus");
-const useCaseSelect = document.getElementById("useCase");
+document.addEventListener("DOMContentLoaded", () => {
+  const taxSelect = document.getElementById("taxexemptstatus");
+  const useCaseSelect = document.getElementById("useCase");
+  const vettingInput = document.getElementById("vettingScore");
 
-// Keep the full original list for reset
-const allUseCases = Array.from(useCaseSelect.options).map(opt => ({ value: opt.value, text: opt.text }));
+  // Store original dropdown options from HTML
+  const allOptions = Array.from(useCaseSelect.querySelectorAll("option")).map(opt => ({
+    value: opt.value,
+    text: opt.textContent
+  }));
 
-taxStatusSelect.addEventListener("change", () => {
-  const status = taxStatusSelect.value;
-  // Clear current options
-  useCaseSelect.innerHTML = "";
+  function updateUseCaseOptions() {
+    const tax = taxSelect.value;
+    const currentSelection = useCaseSelect.value;
 
-  // Always keep the default "Select..." option
-  const defaultOption = document.createElement("option");
-  defaultOption.value = "";
-  defaultOption.textContent = "Select...";
-  useCaseSelect.appendChild(defaultOption);
+    // Keep the original "Select..." option only once
+    const baseOption = allOptions.find(o => o.value === "" || o.text.toLowerCase().includes("select"));
+    useCaseSelect.innerHTML = "";
+    if (baseOption) {
+      const opt = document.createElement("option");
+      opt.value = baseOption.value;
+      opt.textContent = baseOption.text;
+      useCaseSelect.appendChild(opt);
+    }
 
-  // Filter logic
-  if (status === "501c3") {
-    // 501c3 can register for ANY use case (including Charity)
-    filtered = allUseCases.filter(opt => opt.value);
-    } else if (status === "cvtoken") {
-    // CV Token only shows Political
-    filtered = allUseCases.filter(opt => opt.value === "Political");
-    } else if (status === "n/a") {
-    // For-profit / unverified cannot register Political or Charity
-    filtered = allUseCases.filter(opt => !["Political", "Charity"].includes(opt.value) && opt.value);
+    let allowed = [];
+
+    if (tax === "501c3") {
+      // ✅ 501c3 shows all use cases
+      allowed = allOptions.filter(o => o.value && o.text !== baseOption.text);
+      vettingInput.disabled = false;
+      vettingInput.value = "";
+    } else if (tax === "cvtoken") {
+      // ✅ CV token → Political only + disable vetting
+      allowed = allOptions.filter(o => o.text === "Political");
+      vettingInput.disabled = true;
+      vettingInput.value = "";
+    } else if (tax === "n/a") {
+      // ✅ N/A → hide Political and Charity
+      allowed = allOptions.filter(o => o.text !== "Political" && o.text !== "Charity" && o.value);
+      vettingInput.disabled = false;
+      vettingInput.value = "";
     } else {
-    // Everyone else (501c4, 501c5, 501c6, government): all except Charity
-    filtered = allUseCases.filter(opt => opt.value && opt.value !== "Charity");
+      // ✅ All others → hide Charity
+      allowed = allOptions.filter(o => o.text !== "Charity" && o.value);
+      vettingInput.disabled = false;
+      vettingInput.value = "";
     }
 
+    // Add filtered options
+    allowed.forEach(optData => {
+      const opt = document.createElement("option");
+      opt.value = optData.value;
+      opt.textContent = optData.text;
+      useCaseSelect.appendChild(opt);
+    });
 
-  // Rebuild options
-  for (const opt of filtered) {
-    const option = document.createElement("option");
-    option.value = opt.value;
-    option.textContent = opt.text;
-    useCaseSelect.appendChild(option);
+    // Reset selection if now invalid
+    const validValues = Array.from(useCaseSelect.options).map(o => o.value);
+    if (!validValues.includes(currentSelection)) {
+      useCaseSelect.value = "";
+    }
   }
 
-  // Reset useCase selection whenever tax status changes
-  useCaseSelect.value = "";
-
-  // Handle vetting field behavior for CV token
-const vettingContainer = document.querySelector('label[for="vettingScore"]');
-const vettingInput = document.getElementById("vettingScore");
-const vettingMsg = document.getElementById("vettingMsg");
-
-if (status === "cvtoken") {
-  // Disable vetting score and mark visually
-  vettingInput.value = "";
-  vettingInput.disabled = true;
-  vettingInput.classList.add("readonly");
-  vettingMsg.classList.add("hidden");
-
-  // Optional: Add note text
-  if (!document.getElementById("vettingNote")) {
-    const note = document.createElement("p");
-    note.id = "vettingNote";
-    note.className = "note";
-    note.textContent = "Not required for CV token (political) registrations.";
-    vettingContainer.insertAdjacentElement("afterend", note);
-  }
-} else {
-  // Re-enable vetting score
-  vettingInput.disabled = false;
-  vettingInput.classList.remove("readonly");
-
-  // Remove note if present
-  const note = document.getElementById("vettingNote");
-  if (note) note.remove();
-}
-
+  taxSelect.addEventListener("change", updateUseCaseOptions);
 });
 
-
 /*************************************
- * Validation before running overview
+ * Advanced Carrier Mix Toggle & Logic
  *************************************/
-document.getElementById("generateOverview").addEventListener("click", () => {
-  const csvProvided = csvInput.files?.length > 0;
-  const manualProvided = contactInput.value && Number(contactInput.value) > 0;
-  const taxStatus = taxStatusSelect.value;
-  const vettingScore = vettingInput.value;
-  const useCase = useCaseSelect.value;
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("toggleMix");
+  const mixPanel = document.getElementById("mixPanel");
+  const inputs = [
+    document.getElementById("mixTmo"),
+    document.getElementById("mixVz"),
+    document.getElementById("mixAtt"),
+    document.getElementById("mixUs"),
+    document.getElementById("mixUnk")
+  ];
+  const totalEl = document.getElementById("mixTotal");
 
-  let errors = [];
+  // Toggle panel open/close
+  toggleBtn.addEventListener("click", () => {
+    const isHidden = mixPanel.classList.contains("hidden");
+    mixPanel.classList.toggle("hidden");
+    toggleBtn.textContent = isHidden
+      ? "Advanced Carrier Mix (optional) ▲"
+      : "Advanced Carrier Mix (optional) ▼";
+  });
 
-  if (!csvProvided && !manualProvided) {
-    errors.push("Please upload a CSV or enter a contact count.");
+  // Update total dynamically
+  function updateTotal() {
+    const total = inputs.reduce((sum, el) => sum + Number(el.value || 0), 0);
+    totalEl.textContent = `${total.toFixed(1)} %`;
+    totalEl.style.color = total === 100 ? "green" : "red";
   }
 
-  if (!taxStatus) {
-    errors.push("Please select a Tax Exempt Status.");
-  }
-
-  const vetNum = Number(vettingScore);
-    if (taxStatus !== "cvtoken") {
-    if (!vettingScore || isNaN(vetNum) || vetNum < 0 || vetNum > 100) {
-        errors.push("Please enter a valid Vetting Score (0–100).");
-    }
-    }
-
-  if (!useCase) {
-    errors.push("Please select a Use Case.");
-  }
-
-  if (errors.length > 0) {
-    alert(errors.join("\n"));
-    return;
-  }
-
-  // All checks passed → run overview
-  renderOverview();
+  inputs.forEach(i => i.addEventListener("input", updateTotal));
+  updateTotal(); // initialize total on load
 });
 
-document.getElementById("runTimeline").addEventListener("click", simulateDelivery);
 
 /*************************************
- * Default start/end date and time
+ * Button Event Listeners
+ *************************************/
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("generateCarrierMix")
+    .addEventListener("click", generateCarrierBreakdown);
+
+  document.getElementById("generateRateLimits")
+    .addEventListener("click", generateRateLimitSummary);
+
+  document.getElementById("runTimeline")
+    .addEventListener("click", simulateDelivery);
+});
+
+
+/*************************************
+ * Default start/end/send date and time
  *************************************/
 document.addEventListener("DOMContentLoaded", () => {
   const startInput = document.getElementById("startDate");
   const endInput = document.getElementById("endDate");
+  const sendStartInput = document.getElementById("sendStartTime");
 
-  if (startInput && endInput) {
+  if (startInput && endInput && sendStartInput) {
     const now = new Date();
 
     // Today at 9 AM
@@ -888,9 +1122,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
     };
 
-    startInput.value = toLocalInputValue(start);
+    // Set default values
+    const startValue = toLocalInputValue(start);
+    startInput.value = startValue;
     endInput.value = toLocalInputValue(end);
+
+    // 🟢 Set Actual Send Start to match Start Date
+    sendStartInput.value = startValue;
   }
 });
-
-
