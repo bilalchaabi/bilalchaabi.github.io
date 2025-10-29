@@ -3,22 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Throughput Simulator</title>
+  <title>10DLC Throughput Simulator</title>
+  <link rel="icon" href="favicon1.png" type="image/png">
   <link rel="stylesheet" href="styleTS.css">
 </head>
 
 <body>
 
-  <h1>Throughput Simulator</h1>
-  <p class="subtitle">Estimate throughput based on rate limits, carriers, and timing parameters.</p>
+<div class="banner">
+  <img src="getthru-logo_2021_full-color.png" alt="Logo" class="logo">
+       alt="GetThru Logo" class="logo">
+</div>
+
+  <h1>10DLC Throughput Simulator</h1>
+<p class="subtitle">Use this simulator to estimate how long it will take to send your messages based on your campaign setup and carrier rate limits.</p>
+
+<div class="instructions">
+  <button type="button" id="toggleInstructions" class="collapsible-btn">
+    How to use this simulator ▼
+  </button>
+
+  <div id="instructionsContent">
+    <p>Enter your details in the left panel and view the results on the right.
+    </p>
+    <p><strong>Step 1:</strong> Upload a 
+      <a href="https://help.getthru.io/support/solutions/articles/44001063790-group-exports" target="_blank" rel="noopener noreferrer">
+        Group Export</a>, or enter a contact count, and click <strong><em>Generate Carrier Breakdown</em></strong>.
+    </p>
+
+    <p><strong>Step 2:</strong> Get your tax exempt status, vetting score, and use case from your 
+      <a href="https://help.getthru.io/support/solutions/articles/44002252937-brand-registration" target="_blank" rel="noopener noreferrer">
+        Brand Registration Page
+      </a> and click <strong><em>Generate Rate Limit Summary</em></strong>.
+    </p>
+
+    <p><strong>Step 3:</strong> Craft your initial message and set the delivery window and click <strong><em>Run Delivery Simulation</em></strong> to view duration and estimated throughput.</p>
+
+    <p class="note">
+      You can change any inputs and regenerate results to see how different factors affect your delivery speed.
+    </p>
+  </div>
+</div>
+
 
   <div class="main-layout">
-    <!-- LEFT PANEL: INPUTS -->
     <div class="input-panel">
 
-      <!-- 1️⃣ Data Source -->
       <section>
-        <h2>1️⃣ Data Source</h2>
+        <h2><span class="step-number">1</span> Contacts</h2>
         <p class="note">Choose one method for providing contact data (CSV or manual count).</p>
 
         <label for="csvUpload">Upload Group Export CSV</label>
@@ -41,7 +73,6 @@
 
         
 
-<!-- ⚙️ Advanced Carrier Mix (optional) -->
 <div class="advanced-mix">
   <button type="button" id="toggleMix" class="link-btn">
     Advanced Carrier Mix (optional) ▼
@@ -72,9 +103,8 @@
 
       </section>
 
-      <!-- 2️⃣ Campaign Details -->
       <section>
-        <h2>2️⃣ Campaign Details</h2>
+        <h2><span class="step-number">2</span> Brand Information</h2>
         <p class="note">Provide registration and vetting details to estimate carrier rate limits.</p>
 
         <label for="taxexemptstatus">Tax Exempt Status <span style="color:#d00">*</span></label>
@@ -89,7 +119,10 @@
           <option value="n/a">N/A</option>
         </select>
 
-        <label for="vettingScore">Vetting Score <span style="color:#d00">*</span></label>
+        <label for="vettingScore">
+          Vetting Score <span id="vettingAsterisk" style="color:#d00">*</span>
+        </label>
+
         <input type="number" id="vettingScore" min="0" max="100" placeholder="0–100">
         <p id="vettingMsg" class="error hidden">Vetting score must be between 0 and 100.</p>
 
@@ -110,18 +143,14 @@
         <button id="generateRateLimits">Generate Rate Limit Summary</button>
       </section>
 
-      <!-- 3️⃣ Message Setup & Schedule -->
-      <!-- 3️⃣ Message Setup & Schedule -->
+
 <section>
-  <h2>3️⃣ Message Setup & Schedule</h2>
+  <h2><span class="step-number">3</span> Message Setup & Schedule</h2>
   <p class="note">
-    Define your message content and sending window to simulate delivery throughput.
+    Craft your initial message and define the sending windows.
   </p>
 
-  <!-- 📨 Message Setup subgroup -->
   <div class="subgroup">
-    <h3>Message Setup</h3>
-
     <label>Message Type</label>
     <div class="radio-group">
       <label><input type="radio" name="messageType" id="smsType" value="sms" checked> SMS</label>
@@ -140,7 +169,6 @@
 
   <hr class="subdivider">
 
-  <!-- ⏰ Schedule subgroup -->
   <div class="subgroup">
     <h3>Schedule</h3>
 
@@ -191,7 +219,6 @@
 
     </div>
 
-    <!-- RIGHT PANEL: OUTPUTS -->
     <div class="output-panel">
       <section>
         <h2>Carrier Breakdown</h2>
@@ -204,13 +231,21 @@
       </section>
 
       <section>
-        <h2>Delivery Simulation</h2>
-        <div id="simulationOutput">Run the simulation to estimate throughput.</div>
-      </section>
+  <h2>
+    Delivery Simulation
+    <span id="staleNotice" class="stale hidden">(values may be outdated)</span>
+  </h2>
+  <div id="simulationOutput">Run the simulation to estimate throughput.</div>
+</section>
+
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="scriptTS.js"></script>
+  <footer class="footer">
+  <p>Throughput Simulator © GetThru</p>
+  <p><a href="https://getthru.io" target="_blank">getthru.io</a></p>
+</footer>
 </body>
 </html>
