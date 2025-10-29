@@ -8,8 +8,19 @@ body {
   line-height: 1.5;
 }
 
-h1, h2 {
+h1 {
   text-align: center;
+  color: #D14164;
+  font-weight: 700;
+}
+
+ h2 {
+  display: flex;
+  align-items: center;       
+  justify-content: center;
+  gap: 8px;   
+  text-align: center;  
+  font-weight: 700;
 }
 
 .subtitle {
@@ -24,7 +35,6 @@ section {
   margin: 15px auto;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  /* max-width: 800px; */
 }
 
 label {
@@ -45,11 +55,11 @@ input, select, textarea {
 textarea {
   resize: vertical;
   width: 100%;
-  padding: 10px 12px;        /* adds breathing room inside */
+  padding: 10px 12px; 
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
-  box-sizing: border-box;    /* keeps it from overflowing subgroup edges */
+  box-sizing: border-box; 
 }
 
 .row {
@@ -64,7 +74,7 @@ textarea {
 button {
   display: block;
   margin: 30px auto;
-  background: #007bff;
+  background: #D14164;
   color: white;
   font-size: 16px;
   padding: 12px 25px;
@@ -74,7 +84,7 @@ button {
 }
 
 button:hover {
-  background: #0056b3;
+  background: #be3e5d;
 }
 
 .readonly {
@@ -100,8 +110,8 @@ button:hover {
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #eef2ff; /* placeholder */
-  color: #3730a3;      /* placeholder */
+  background: #eef2ff; 
+  color: #3730a3; 
   border: 1px solid #c7d2fe;
 }
 
@@ -125,7 +135,7 @@ button:hover {
 
 .hidden { display: none; }
 
-/* --- Radio button alignment fix --- */
+
 .radio-group {
   display: flex;
   gap: 20px;
@@ -144,7 +154,7 @@ button:hover {
 .radio-group input[type="radio"] {
   width: auto;
   margin: 0;
-  accent-color: #007bff; /* modern browsers: blue check color */
+  accent-color: #007bff;
 }
 
 .section-label {
@@ -181,13 +191,13 @@ button:hover {
 
 #rateLimitOutput table + .note + table,
 #rateLimitOutput table + table {
-  margin-top: 20px;         /* space before the line */
+  margin-top: 20px;  
   border-top: 2px solid #ddd;
-  padding-top: 10px;        /* space above table content */
-  margin-bottom: 15px;      /* space after the line */
+  padding-top: 10px;
+  margin-bottom: 15px;
 }
 
-/* Add a little breathing room below the note */
+
 #rateLimitOutput .note {
   margin-top: 20px;
   margin-bottom: 20px;
@@ -196,14 +206,14 @@ button:hover {
 .table-separator {
   border-top: 2px solid #ddd;
   margin-top: 20px;
-  margin-bottom: 25px; /* creates space before the next table */
+  margin-bottom: 25px;
 }
 
 .row > button {
   min-width: 220px;
 }
 
-/* === Unified Output Table Styling === */
+
 #carrierOutput table,
 #rateLimitOutput table,
 #simulationOutput table {
@@ -246,7 +256,7 @@ button:hover {
   text-align: right;
 }
 
-/* Scroll wrapper (applies to all outputs) */
+
 .table-wrapper {
   overflow-x: auto;
   border-radius: 8px;
@@ -265,14 +275,14 @@ button:hover {
   border-radius: 8px;
   margin-top: 8px;
   margin-bottom: 16px;
-  -webkit-overflow-scrolling: touch; /* smooth scroll on Mac/iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 .table-wrapper table {
-  min-width: 600px; /* ensures columns stay readable */
+  min-width: 600px;
 }
 
-/* --- Two-column layout for large screens --- */
+
 .main-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -282,7 +292,7 @@ button:hover {
   align-items: start;
 }
 
-/* Make each panel scrollable if needed */
+
 .input-panel,
 .output-panel {
   background: #fff;
@@ -294,7 +304,7 @@ button:hover {
 }
 
 .input-panel {
-  background: #fefefe;             /* softer than pure white */
+  background: #fefefe; 
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -308,8 +318,8 @@ button:hover {
 }
 
 .output-panel {
-  background: #f3f4f6;             /* light gray-blue tint */
-  border-left: 5px solid #007bff;  /* consistent brand color */
+  background: #f3f4f6;
+  border-left: 5px solid #D14164;
   box-shadow: inset 0 0 0 1px #e5e7eb;
 }
 
@@ -321,7 +331,7 @@ button:hover {
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-/* === Subgroup Styling (Message Setup & Schedule) === */
+
 .subgroup {
   margin-bottom: 20px;
   padding: 15px 18px;
@@ -345,7 +355,6 @@ button:hover {
 }
 
 
-/* Stack panels on smaller screens */
 @media (max-width: 1000px) {
   .main-layout {
     grid-template-columns: 1fr;
@@ -354,10 +363,9 @@ button:hover {
 
 .output-panel {
   background: #f8fafc;
-  border-left: 6px solid #007bff;
+  border-left: 6px solid #D14164;
 }
 
-/* Prevent wrapping for carrier names like "T-Mobile" */
 #rateLimitOutput td:first-child,
 #carrierOutput td:first-child {
   white-space: nowrap;
@@ -370,7 +378,6 @@ button:hover {
 }
 
 
-/* --- "or" divider between inputs --- */
 .input-divider {
   display: flex;
   align-items: center;
@@ -396,7 +403,6 @@ button:hover {
 }
 
 
-/* === Table styling for Carrier Breakdown & Rate Limit Summary === */
 #carrierOutput table,
 #rateLimitOutput table {
   width: 100%;
@@ -430,26 +436,24 @@ button:hover {
   white-space: nowrap;
 }
 
-/* --- Unified Schedule Section Styling --- */
+
 .schedule-group,
 .sendstart-separator {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 15px 15px 20px;
   margin-bottom: 18px;
-  background-color: #fff; /* white inner card on gray background */
+  background-color: #fff;
   overflow: hidden;
 }
 
 
 .schedule-group.highlight {
-  border: 1px solid #d1d5db;      /* same border as others */
-  background-color: #fcfcfc;      /* very subtle off-white */
+  border: 1px solid #d1d5db; 
+  background-color: #fcfcfc;  
 }
 
 
-
-/* Headings inside each group */
 .group-header {
   margin-bottom: 10px;
 }
@@ -468,7 +472,7 @@ button:hover {
   margin-top: 2px;
 }
 
-/* Inputs inside schedule sections */
+
 .schedule-group input[type="datetime-local"],
 .schedule-group input[type="time"],
 .sendstart-separator input[type="datetime-local"] {
@@ -480,10 +484,9 @@ button:hover {
   background-color: #fff;
   outline: none;
   margin-top: 4px;
-  box-sizing: border-box; /* ✅ keeps icons inside container */
+  box-sizing: border-box;
 }
 
-/* Keep both inputs aligned inside row */
 .schedule-group .row {
   display: flex;
   gap: 20px;
@@ -495,12 +498,12 @@ button:hover {
   overflow: hidden;
 }
 
-/* Slight spacing for subtle separation between boxes */
+
 .schedule-group + .sendstart-separator {
   margin-top: 22px;
 }
 
-/* Subtext below inputs */
+
 .subtext {
   font-size: 13px;
   color: #6b7280;
@@ -508,7 +511,7 @@ button:hover {
 }
 
 
-/* === Advanced Carrier Mix === */
+
 .advanced-mix {
   margin-top: 15px;
   margin-bottom: 15px;
@@ -590,4 +593,242 @@ button:hover {
 .mix-disabled input {
   background-color: #f3f4f6;
   cursor: not-allowed;
+}
+
+input[disabled] {
+  background-color: #f3f4f6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+label[for="vettingScore"].dimmed {
+  color: #6b7280;
+  opacity: 0.7;
+}
+
+#rateLimitOutput td,
+#rateLimitOutput th {
+  vertical-align: middle;      /* Centers text vertically */
+  line-height: 1.4;            /* Keeps consistent row height */
+  padding-top: 8px;            /* Consistent spacing */
+  padding-bottom: 8px;
+}
+
+
+
+
+
+/* Carrier Breakdown */
+#carrierOutput th:nth-child(2),
+#carrierOutput th:nth-child(3),
+#carrierOutput td:nth-child(2),
+#carrierOutput td:nth-child(3) {
+  text-align: right;
+}
+
+/* Rate Limit Summary (T-Mobile table) */
+#rateLimitOutput th:nth-child(3),
+#rateLimitOutput th:nth-child(4),
+#rateLimitOutput th:nth-child(5),
+#rateLimitOutput td:nth-child(3),
+#rateLimitOutput td:nth-child(4),
+#rateLimitOutput td:nth-child(5) {
+  text-align: right;
+}
+
+/* Rate Limit Summary (Other carriers table) */
+#rateLimitOutput th:nth-child(3),
+#rateLimitOutput th:nth-child(4),
+#rateLimitOutput td:nth-child(3),
+#rateLimitOutput td:nth-child(4) {
+  text-align: right;
+}
+
+/* Delivery Simulation: Duration Table */
+#simulationOutput th:nth-child(3),
+#simulationOutput td:nth-child(3) {
+  text-align: right;
+}
+
+/* Delivery Simulation: Daily Table */
+#simulationOutput th:nth-child(3),
+#simulationOutput th:nth-child(4),
+#simulationOutput th:nth-child(5),
+#simulationOutput td:nth-child(3),
+#simulationOutput td:nth-child(4),
+#simulationOutput td:nth-child(5) {
+  text-align: right;
+}
+
+/* Right-align only the "Details" header in the first (T-Mobile) Rate Limit table */
+#rateLimitOutput table:first-of-type th:last-child {
+  text-align: right;
+}
+
+#simulationOutput .note ul {
+  margin-left: 20px;
+}
+
+.instructions {
+  background: #f9fafb;
+  border: 2px solid #D14164;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  color: #1f2937;
+}
+
+.instructions h3 {
+  margin-top: 0;
+}
+
+.instructions ol {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.instructions p {
+  margin: 0.4em 0;
+  line-height: 1.5;
+}
+
+.instructions p {
+  margin: 0.4em 0;
+  line-height: 1.5;
+  max-width: 90%;     
+  margin-left: auto;
+  margin-right: auto;   
+}
+
+.instructions p:not(.note) {
+  max-width: 90%;         /* narrower only for the step paragraphs */
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+.instructions .note {
+  max-width: none;         /* let the note stretch full width */
+  text-align: center;      /* optional: center the note */
+  margin-top: 1em;
+}
+
+/* === Collapsible Instructions === */
+.collapsible-btn {
+  background: none;
+  border: none;
+  color: #1e3a8a;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 0px 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: color 0.2s ease;
+}
+
+.collapsible-btn:hover {
+  color: #0b5ed7;
+  text-decoration: underline;
+  background: none !important; /* removes any hover background */
+}
+
+
+#instructionsContent {
+  margin-top: 10px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+#instructionsContent.hidden {
+  max-height: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#instructionsContent:not(.hidden) {
+  max-height: 1000px; 
+  opacity: 1;
+}
+
+
+.banner {
+  background-color: #fff;
+  color: #000;
+  padding: 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.logo {
+  width: 150px !important;
+  max-width: 100%;
+  margin-right: 20px;
+}
+
+body {
+  margin-top: 50px;
+}
+
+.footer {
+  text-align: center;
+  padding: 0px 0;
+  background: #f9f9f9;
+  color: #666;
+  font-size: 14px;
+  margin-top: 40px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.footer p {
+  margin-top: 2px 0;
+  margin-bottom: 0px
+}
+
+.footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+.step-number {
+  display: inline-block;
+  background-color: #D14164;
+  color: white;
+  font-weight: bold;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px; 
+  text-align: center;
+  line-height: 28px;
+  margin-right: 8px;
+  font-size: 15px;
+}
+
+.stale {
+  color: #d97706;
+  font-size: 14px;
+  margin-left: 10px;
+  font-weight: normal;
+  background: #fef3c7; 
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #fcd34d;
+}
+
+.hidden {
+  display: none;
 }
