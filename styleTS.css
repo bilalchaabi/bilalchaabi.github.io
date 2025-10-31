@@ -26,8 +26,11 @@ h1 {
 .subtitle {
   text-align: center;
   color: #555;
-  margin-bottom: 30px;
+  margin: 0 auto 30px auto;  /* centers block horizontally */
+  max-width: 80%;
+  display: block;
 }
+
 
 section {
   background: white;
@@ -266,8 +269,10 @@ button:hover {
 }
 
 .table-wrapper table {
-  min-width: 600px;
+  min-width: unset;
+  width: 100%;
 }
+
 
 
 .table-wrapper {
@@ -276,10 +281,6 @@ button:hover {
   margin-top: 8px;
   margin-bottom: 16px;
   -webkit-overflow-scrolling: touch;
-}
-
-.table-wrapper table {
-  min-width: 600px;
 }
 
 
@@ -818,16 +819,53 @@ body {
   font-size: 15px;
 }
 
-.stale {
-  color: #d97706;
-  font-size: 14px;
-  margin-left: 10px;
-  font-weight: normal;
-  background: #fef3c7; 
-  padding: 2px 8px;
-  border-radius: 6px;
-  border: 1px solid #fcd34d;
+@keyframes stalePulse {
+  0%, 100% {
+    background-color: #fff7ed; 
+  }
+  50% {
+    background-color: #fde68a; 
+  }
 }
+
+section h2 {
+  position: relative;
+}
+
+.stale {
+  color: #92400e;
+  background: #fff7ed; 
+  border: 1px solid #f59e0b;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 10px;
+  margin-left: 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  animation: stalePulse 2s ease-in-out infinite;
+  position: absolute;
+  right: 15px;
+  top: 0;
+  transform: translateY(-120%);
+  background: #fff7ed;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  animation: stalePulse 2s ease-in-out infinite;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.stale::before {
+  content: "⚠️";
+  font-size: 15px;
+}
+
 
 .hidden {
   display: none;
