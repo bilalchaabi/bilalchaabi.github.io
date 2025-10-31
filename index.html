@@ -15,7 +15,7 @@
 </div>
 
   <h1>10DLC Throughput Simulator</h1>
-<p class="subtitle">Use this simulator to estimate how long it will take to send your messages based on your campaign setup and carrier rate limits.</p>
+<p class="subtitle">Use this simulator to estimate how long it will take to send your messages.<br>These values are estimates only. Brands that share an EIN will share limits, which is not captured in these estimates.</p>
 
 <div class="instructions">
   <button type="button" id="toggleInstructions" class="collapsible-btn">
@@ -232,10 +232,16 @@
       <section>
   <h2>
     Delivery Simulation
-    <span id="staleNotice" class="stale hidden">(values may be outdated)</span>
+    <span id="staleNotice" class="stale hidden">Inputs changed — run the simulation again to refresh results.</span>
   </h2>
-  <div id="simulationOutput">Run the simulation to estimate throughput.</div>
+  <p id="estimateNote" class="note hidden">
+  <em>Estimates only — actual throughput may differ based on carrier enforcement and EIN-level limits.</em>
+</p>
+<div id="simulationOutput">Run the simulation to estimate throughput.</div>
+
 </section>
+
+
 
     </div>
   </div>
