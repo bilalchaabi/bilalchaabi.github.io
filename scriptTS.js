@@ -421,7 +421,7 @@ contactInput.addEventListener('input', () => {
 });
 
 /*************************************
- * Rate-limit logic 
+ * Rate-limit determination logic (all 4 carriers)
  *************************************/
 function getRateLimit(carrier, messageType, vetting, useCase, taxStatus) {
   carrier = (carrier || "").toLowerCase();
@@ -476,7 +476,7 @@ function getRateLimit(carrier, messageType, vetting, useCase, taxStatus) {
 
 
 /*************************************
- * (Carriers + Rate Limits)
+ * Overview Rendering (Carriers + Rate Limits)
  *************************************/
 function generateCarrierBreakdown() {
   const container = document.getElementById("carrierOutput");
@@ -544,6 +544,12 @@ function generateCarrierBreakdown() {
   container.innerHTML = "";
   container.appendChild(meta);
   container.appendChild(table);
+
+  const unkNote = document.createElement("p");
+  unkNote.className = "note";
+  unkNote.textContent = "Unknown carriers are treated as AT&T for throughput purposes.";
+  container.appendChild(unkNote);
+
 }
 
 function generateRateLimitSummary() {
@@ -671,10 +677,8 @@ if (isNaN(vetting) || vetting < 0 || vetting > 100) {
   `;
   const oBody = otherTable.querySelector("tbody");
 
-  ["Verizon", "AT&T", "US Cellular", "Unknown"].forEach(c => {
-
-  const refCarrier = c === "Unknown" ? "AT&T" : c;
-  const rate = getRateLimit(refCarrier, messageType, vetting, useCase, taxStatus);
+  ["Verizon", "AT&T", "US Cellular"].forEach(c => {
+  const rate = getRateLimit(c, messageType, vetting, useCase, taxStatus);
   if (!rate) return;
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -682,19 +686,14 @@ if (isNaN(vetting) || vetting < 0 || vetting > 100) {
     <td>segments/minute</td>
     <td>${rate.sms?.toLocaleString?.() ?? "-"}</td>
     <td>${rate.mms?.toLocaleString?.() ?? "-"}</td>
-    <td>${rate.label}${c === "Unknown" ? " (Treated as AT&T)" : ""}</td>
+    <td>${rate.label}</td>
   `;
   oBody.appendChild(tr);
 });
 
 
+
   rateContainer.appendChild(otherTable);
-
-  const unkNote = document.createElement("p");
-unkNote.className = "note";
-unkNote.textContent = "Unknown carriers are treated as AT&T for throughput purposes.";
-rateContainer.appendChild(unkNote);
-
 
 
   window.__lastOverview = { vetting, useCase, taxStatus, messageType };
@@ -705,10 +704,16 @@ rateContainer.appendChild(unkNote);
 
 /*************************************
  * Simulation (Schedule + Rate Limits)
+ * - Minimal working version: computes per-day capacity by carrier
+ *   using current message type and schedule window.
  *************************************/
 function simulateDelivery() {
   const simOut = document.getElementById("simulationOutput");
   simOut.innerHTML = "";
+
+  // Show the estimate note once simulation runs
+document.getElementById("estimateNote")?.classList.remove("hidden");
+
 
   if (MODE === "NONE" || !window.__lastOverview) {
     simOut.textContent = "Please generate carrier breakdown and rate limits first.";
@@ -747,8 +752,16 @@ function simulateDelivery() {
 
   const needs = {};
   Object.keys(carrierCounts).forEach(c => {
-    needs[c] = (carrierCounts[c] || 0) * segmentsPerMessage;
+    const count = carrierCounts[c] || 0;
+    const segments = count * segmentsPerMessage;
+
+    if (c === "Unknown") {
+      needs["AT&T"] = (needs["AT&T"] || 0) + segments;
+    } else {
+      needs[c] = (needs[c] || 0) + segments;
+    }
   });
+
 
 
   function perDayCapacity(carrier) {
@@ -768,9 +781,9 @@ function simulateDelivery() {
     "T-Mobile": perDayCapacity("T-Mobile"),
     "Verizon": perDayCapacity("Verizon"),
     "AT&T": perDayCapacity("AT&T"),
-    "US Cellular": perDayCapacity("US Cellular"),
-    "Unknown": perDayCapacity("AT&T")
+    "US Cellular": perDayCapacity("US Cellular")
   };
+
 
 
   const results = [];
@@ -854,9 +867,11 @@ durationTable.innerHTML = `
 const sBody = durationTable.querySelector("tbody");
 
 
-["T-Mobile", "Verizon", "AT&T", "US Cellular", "Unknown"].forEach(c => {
+["T-Mobile", "Verizon", "AT&T", "US Cellular"].forEach(c => {
   const backlog = needs[c];
   const daily = caps[c];
+  let displayName = c === "AT&T" ? "AT&T / Unknown" : c;
+
   let durationText = "";
   let debugText = "";
 
@@ -872,10 +887,7 @@ const sBody = durationTable.querySelector("tbody");
       debugText = `${backlog.toLocaleString()} ÷ ${daily.toLocaleString()} = ${(backlog / daily).toFixed(2)}`;
     }
   } else {
-
-      const refCarrier = c === "Unknown" ? "AT&T" : c;
-      const rate = getRateLimit(refCarrier, messageType, vetting, useCase, taxStatus);
-
+    const rate = getRateLimit(c, messageType, vetting, useCase, taxStatus);
     const perMinute = messageType === "mms" ? (rate?.mms ?? 0) : (rate?.sms ?? 0);
     if (perMinute <= 0) {
       durationText = "∞";
@@ -894,12 +906,13 @@ const sBody = durationTable.querySelector("tbody");
 
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td>${c}</td>
+    <td>${displayName}</td>
     <td>${durationText}</td>
     <td style="text-align:right;">${debugText}</td>
   `;
   sBody.appendChild(tr);
 });
+
 
 
 
@@ -979,15 +992,16 @@ summaryTable.innerHTML = `
 `;
 
 const tbody = summaryTable.querySelector("tbody");
-const carrierOrder = ["T-Mobile", "Verizon", "AT&T", "US Cellular", "Unknown"];
 
+const carrierOrder = ["T-Mobile", "Verizon", "AT&T", "US Cellular"];
 for (const r of results) {
   for (const carrier of carrierOrder) {
     if (!(carrier in r.sent)) continue;
+    const displayName = carrier === "AT&T" ? "AT&T / Unknown" : carrier;
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${r.dayLabel}</td>
-      <td>${carrier}</td>
+      <td>${displayName}</td>
       <td>${r.sent[carrier].toLocaleString()}</td>
       <td>${r.queued[carrier].toLocaleString()}</td>
       <td>${r.failed[carrier].toLocaleString()}</td>
@@ -995,6 +1009,7 @@ for (const r of results) {
     tbody.appendChild(tr);
   }
 }
+
 
 
 const dailyWrapper = document.createElement("div");
